@@ -1,0 +1,38 @@
+/*
+ * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
+ */
+package org.ligoj.app.resource.node.sample;
+
+import javax.transaction.Transactional;
+import javax.transaction.Transactional.TxType;
+
+import org.ligoj.app.api.ConfigurablePlugin;
+import org.ligoj.app.resource.plugin.AbstractServicePlugin;
+
+/**
+ * The bug tracker service.
+ */
+public class BugTrackerResource extends AbstractServicePlugin implements ConfigurablePlugin {
+
+	/**
+	 * Plug-in key.
+	 */
+	public static final String SERVICE_URL = BASE_URL + "/bt";
+
+	/**
+	 * Plug-in key.
+	 */
+	public static final String SERVICE_KEY = SERVICE_URL.replace('/', ':').substring(1);
+
+	@Override
+	@Transactional(value = TxType.SUPPORTS)
+	public String getKey() {
+		return SERVICE_KEY;
+	}
+
+	@Override
+	public Object getConfiguration(final int subscription) {
+		return 0;
+	}
+
+}

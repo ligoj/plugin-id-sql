@@ -1,0 +1,4 @@
+id;name;refined.id;mode;uiClasses;tag;tagUiClasses
+service:id;Identity;;CREATE;fa fa-key;functional;fa fa-suitcase
+service:id:sql;Identity SQL;service:id;ALL;;;
+service:id:sql:local;Identity SQL Local;service:id:sql;ALL;;;
