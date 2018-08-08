@@ -150,10 +150,8 @@ public class UserSqlRepository implements IUserRepository {
 	@Override
 	public UserOrg create(final UserOrg user) {
 		user.setDn(buildDn(user).toString());
-		cacheRepository.create(user);
-
 		// Return the original entry with updated DN
-		return user;
+		return cacheRepository.create(user);
 	}
 
 	@Override
@@ -451,7 +449,7 @@ public class UserSqlRepository implements IUserRepository {
 	}
 
 	private void unlock(final UserOrg user, final boolean isolate) {
-		if (user.getIsolated() == null && user.getLockedBy() != null) {
+		if (user.getIsolated() == null && user.getLocked() != null) {
 			final UserSqlCredential credential = createAsNeeded(user);
 			credential.setLocked(null);
 			credential.setLockedBy(null);

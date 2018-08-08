@@ -93,11 +93,13 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 		for (final CacheMembership membership : cacheMembershipRepository.findAll()) {
 			final GroupOrg group = groups.get(membership.getGroup().getId());
 			if (membership.getUser() == null) {
+				// Sub-group membership
 				group.getSubGroups().add(membership.getSubGroup().getId());
 
 				// Complete the inverse relationship
 				groups.get(membership.getSubGroup().getId()).getGroups().add(group.getId());
 			} else {
+				// User membership
 				group.getMembers().add(membership.getUser().getId());
 			}
 		}
@@ -144,11 +146,7 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 
 	@Override
 	public GroupOrg create(final String dn, final String cn) {
-		final GroupOrg group = super.create(dn, cn);
-
-		// Also, update the SQL cache
-		repository.create(group);
-		return group;
+		return repository.create(super.create(dn, cn));
 	}
 
 	@Override

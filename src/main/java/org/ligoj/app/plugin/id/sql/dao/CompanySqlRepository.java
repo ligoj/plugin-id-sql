@@ -130,13 +130,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 
 	@Override
 	public CompanyOrg create(final String dn, final String cn) {
-		final CompanyOrg company = super.create(dn, cn);
-
-		// Also, update the cache
-		repository.create(company);
-
-		// Return the new group
-		return company;
+		return repository.create(super.create(dn, cn));
 	}
 
 	@Override

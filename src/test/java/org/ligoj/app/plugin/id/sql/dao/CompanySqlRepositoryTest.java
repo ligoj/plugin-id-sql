@@ -5,6 +5,7 @@ package org.ligoj.app.plugin.id.sql.dao;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +37,7 @@ import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -59,6 +61,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
 				StandardCharsets.UTF_8.name());
+		cacheManager.getCache("id-sql-data").clear();
 	}
 
 	@Test
@@ -85,7 +88,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 		containers.add(createInternal);
 		containers.add(sub);
 		final Map<String, Comparator<CompanyOrg>> customComparators = new HashMap<>();
-		Page<CompanyOrg> all = repository.findAll(containers, "o", PageRequest.of(0, 10), customComparators);
+		final Page<CompanyOrg> all = repository.findAll(containers, "o", PageRequest.of(0, 10), customComparators);
 		Assertions.assertEquals(2, all.getContent().size());
 		Assertions.assertEquals("other", all.getContent().get(0).getId());
 		Assertions.assertEquals("sub-other", all.getContent().get(1).getId());
@@ -97,5 +100,26 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	@Test
 	public void newLdapName() {
 		Assertions.assertThrows(TechnicalException.class, () -> repository.newLdapName("-invalid-"));
+	}
+
+	@Test
+	public void findAll() {
+		final CompanyOrg createInternal = createInternal();
+		final Set<CompanyOrg> containers = new HashSet<>();
+		containers.add(createInternal);
+		final Page<CompanyOrg> all = repository.findAll(containers, "", PageRequest.of(0, 10, Direction.DESC, "id"),
+				Collections.emptyMap());
+		Assertions.assertEquals(1, all.getContent().size());
+		Assertions.assertEquals("other", all.getContent().get(0).getId());
+	}
+
+	@Test
+	public void findAllNoMatch() {
+		final CompanyOrg createInternal = createInternal();
+		final Set<CompanyOrg> containers = new HashSet<>();
+		containers.add(createInternal);
+		final Page<CompanyOrg> all = repository.findAll(containers, "-no-match-", PageRequest.of(0, 10, Direction.DESC, "id"),
+				Collections.emptyMap());
+		Assertions.assertEquals(0, all.getContent().size());
 	}
 }

@@ -61,6 +61,7 @@ public class UserSqlRepositoryTest extends AbstractJpaTest {
 				StandardCharsets.UTF_8.name());
 		repository = new UserSqlRepository();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(repository);
+		cacheManager.getCache("id-sql-data").clear();
 	}
 
 	@Test
@@ -284,7 +285,7 @@ public class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	public void checkUserStatus() {
-		final UserOrg user = new UserOrg();
+		final UserOrg user = newUser();
 		repository.checkLockStatus(user);
 
 		Assertions.assertNull(user.getLocked());
@@ -293,4 +294,38 @@ public class UserSqlRepositoryTest extends AbstractJpaTest {
 		Assertions.assertEquals("ou=internal,ou=people", repository.getPeopleInternalBaseDn());
 	}
 
+	@Test
+	public void unlockNoLocked() {
+		final UserOrg user = newUser();
+
+		// Dirty flag, should never occurs, but this flag is used to check the untouched user
+		user.setLockedBy("some");
+
+		repository.unlock(user);
+
+		// The user was not locked, expect the user data to be untouched
+		Assertions.assertEquals("some", user.getLockedBy());
+	}
+
+	@Test
+	public void unlockIsolated() {
+		final UserOrg user = newUser();
+		user.setIsolated("old-company");
+
+		repository.unlock(user);
+
+		Assertions.assertEquals("old-company", user.getIsolated());
+	}
+
+	@Test
+	public void unlock() {
+		final UserOrg user = newUser();
+		user.setLocked(new Date());
+		user.setLockedBy("some");
+
+		repository.unlock(user);
+
+		Assertions.assertNull(user.getLocked());
+		Assertions.assertNull(user.getLockedBy());
+	}
 }
