@@ -71,7 +71,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("fdaugan", user.getId());
 		Assertions.assertEquals("Fabrice", user.getFirstName());
 		Assertions.assertEquals("Daugan", user.getLastName());
-		Assertions.assertEquals("gfi", user.getCompany());
+		Assertions.assertEquals("ligoj", user.getCompany());
 		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().get(0));
 	}
 
@@ -223,7 +223,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	/**
-	 * One delegation to members of group "gfi-gstack" to see the company "ing"
+	 * One delegation to members of group "ligoj-gstack" to see the company "ing"
 	 */
 	@Test
 	public void findAllUsingDelegateReceiverGroup() {
@@ -241,7 +241,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 
 		// Check the groups
 		Assertions.assertEquals(1, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("gfi-gStack", tableItem.getData().get(0).getGroups().get(0).getName());
+		Assertions.assertEquals("ligoj-gStack", tableItem.getData().get(0).getGroups().get(0).getName());
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(15, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(7).getId());
+		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
 	}
 
 	@Test
@@ -353,8 +353,8 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		// Check the users
 		Assertions.assertEquals("flast0", tableItem.getData().get(0).getId());
 		Assertions.assertEquals("socygan", tableItem.getData().get(0).getCompany());
-		Assertions.assertEquals("fdaugan", tableItem.getData().get(14).getId());
-		Assertions.assertEquals("gfi", tableItem.getData().get(14).getCompany());
+		Assertions.assertEquals("fdaugan", tableItem.getData().get(6).getId());
+		Assertions.assertEquals("ligoj", tableItem.getData().get(6).getCompany());
 	}
 
 	@Test
@@ -373,7 +373,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	public void findAllMemberDifferentCase() {
-		final TableItem<UserOrgVo> tableItem = resource.findAll("GfI", "ProductioN", "mmarTIN",
+		final TableItem<UserOrgVo> tableItem = resource.findAll("LigoJ", "ProductioN", "mmarTIN",
 				newUriInfoAsc("lastName"));
 		Assertions.assertEquals(1, tableItem.getRecordsTotal());
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
@@ -997,9 +997,9 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	public void findAllMyCompany() {
 		initSpringSecurityContext("mmartin");
 
-		final TableItem<UserOrgVo> tableItem = resource.findAll("gfi", null, null, newUriInfoAsc("id"));
+		final TableItem<UserOrgVo> tableItem = resource.findAll("ligoj", null, null, newUriInfoAsc("id"));
 
-		// 7 users from company 'gfi', 0 from delegate
+		// 7 users from company 'ligoj', 0 from delegate
 		Assertions.assertEquals(7, tableItem.getRecordsTotal());
 		Assertions.assertEquals(7, tableItem.getRecordsFiltered());
 
@@ -1079,7 +1079,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("fdaugan", user.getId());
 		Assertions.assertEquals("Fabrice", user.getFirstName());
 		Assertions.assertEquals("Daugan", user.getLastName());
-		Assertions.assertEquals("gfi", user.getCompany());
+		Assertions.assertEquals("ligoj", user.getCompany());
 		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().get(0));
 		Assertions.assertEquals(1, user.getGroups().size());
 		Assertions.assertEquals("Hub Paris", user.getGroups().iterator().next());
@@ -1136,7 +1136,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Check the uniqueMember is updated for the related groups
 	 */
 	protected void checkMember(final String dn) {
-		CacheGroup group = cacheGroupRepository.findByNameExpected("gfi-gStack");
+		CacheGroup group = cacheGroupRepository.findByNameExpected("ligoj-gStack");
 		List<CacheMembership> members = cacheMembershipRepository.findAllBy("group", group);
 		Assertions.assertEquals(1, members.size());
 		Assertions.assertEquals(dn, members.get(0).getGroup().getDescription());
@@ -1167,10 +1167,10 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	protected CacheUser checkUnlocked() {
-		assertUnlocked(resource.findAll("gfi", null, "alongchu", newUriInfo()).getData().get(0));
+		assertUnlocked(resource.findAll("ligoj", null, "alongchu", newUriInfo()).getData().get(0));
 		assertUnlocked(getUser().findByIdNoCache("alongchu"));
 		assertUnlocked(getUser().findById("alongchu"));
-		Assertions.assertTrue(getGroup().findAll().get("gfi-gstack").getMembers().contains("alongchu"));
+		Assertions.assertTrue(getGroup().findAll().get("ligoj-gstack").getMembers().contains("alongchu"));
 
 		final CacheUser result = getContext("alongchu");
 		Assertions.assertNull(credentialRepository.findBy("user", result).getLocked());
@@ -1184,7 +1184,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		checker.accept(resource.findById("alongchu"));
 
 		// Check the status at cache layer
-		Assertions.assertTrue(getGroup().findAll().get("gfi-gstack").getMembers().contains("alongchu"));
+		Assertions.assertTrue(getGroup().findAll().get("ligoj-gstack").getMembers().contains("alongchu"));
 		checker.accept(getUser().findByIdNoCache("alongchu"));
 
 		// Check in the status in the LDAP

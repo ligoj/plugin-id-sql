@@ -109,12 +109,12 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	@Test
 	public void validateGroup() {
 		final Map<String, String> parameters = pvResource.getNodeParameters("service:id:sql:local");
-		parameters.put(IdentityResource.PARAMETER_GROUP, "gfi-gstack");
+		parameters.put(IdentityResource.PARAMETER_GROUP, "ligoj-gstack");
 
 		final INamableBean<String> group = resource.validateGroup(parameters);
 		Assertions.assertNotNull(group);
-		Assertions.assertEquals("gfi-gstack", group.getId());
-		Assertions.assertEquals("gfi-gStack", group.getName());
+		Assertions.assertEquals("ligoj-gstack", group.getId());
+		Assertions.assertEquals("ligoj-gStack", group.getName());
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 		// Add parameters
 		setGroup(subscription2, "sea-invalid-ou");
-		setOu(subscription2, "gfi");
+		setOu(subscription2, "ligoj");
 
 		// Invoke link for an already linked entity, since for now
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
@@ -335,8 +335,8 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 		final CacheGroup group = new CacheGroup();
 		group.setDescription("cn=g,dc=sample,dc=com");
-		group.setId("gfi-gstack");
-		group.setName("gfi-gstack");
+		group.setId("ligoj-gstack");
+		group.setName("ligoj-gstack");
 		// em.persist(group);
 
 		final CacheMembership membership = new CacheMembership();
@@ -414,16 +414,16 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	public void findGroupsByName() {
 		final List<INamableBean<String>> jobs = resource.findGroupsByName("StAck");
 		Assertions.assertTrue(jobs.size() >= 1);
-		Assertions.assertEquals("gfi-gStack", jobs.get(0).getName());
-		Assertions.assertEquals("gfi-gstack", jobs.get(0).getId());
+		Assertions.assertEquals("ligoj-gStack", jobs.get(0).getName());
+		Assertions.assertEquals("ligoj-gstack", jobs.get(0).getId());
 	}
 
 	@Test
 	public void findGroupsByNameNoScope() {
 		final List<INamableBean<String>> jobs = resource.findGroupsByName("StAck");
 		Assertions.assertTrue(jobs.size() >= 1);
-		Assertions.assertEquals("gfi-gStack", jobs.get(0).getName());
-		Assertions.assertEquals("gfi-gstack", jobs.get(0).getId());
+		Assertions.assertEquals("ligoj-gStack", jobs.get(0).getName());
+		Assertions.assertEquals("ligoj-gstack", jobs.get(0).getId());
 	}
 
 	@Test
@@ -490,7 +490,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setFirstName("First");
 		user.setLastName("Last123");
 		user.setName("secondarylogin");
-		user.setCompany("gfi");
+		user.setCompany("ligoj");
 		user.setDepartment("3890");
 		user.setLocalId("8234");
 		Assertions.assertEquals("mmartin", resource.toApplicationUser(user));
@@ -509,7 +509,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setMails(Collections.singletonList("some@where.com"));
 		user.setFirstName("First");
 		user.setLastName("Last123");
-		user.setCompany("gfi");
+		user.setCompany("ligoj");
 		user.setName("secondarylogin");
 		Assertions.assertEquals("flast123", resource.toApplicationUser(user));
 
@@ -517,7 +517,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("flast123", userLdap.getName());
 		Assertions.assertEquals("First", userLdap.getFirstName());
 		Assertions.assertEquals("Last123", userLdap.getLastName());
-		Assertions.assertEquals("gfi", userLdap.getCompany());
+		Assertions.assertEquals("ligoj", userLdap.getCompany());
 		Assertions.assertEquals("some@where.com", userLdap.getMails().get(0));
 		userResource.delete("flast123");
 	}
@@ -529,7 +529,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setMails(Collections.singletonList("some@where.com"));
 		user.setFirstName("Marc");
 		user.setLastName("Martin");
-		user.setCompany("gfi");
+		user.setCompany("ligoj");
 		user.setName("secondarylogin");
 		Assertions.assertEquals("mmartin1", resource.toApplicationUser(user));
 
@@ -537,7 +537,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("mmartin1", userLdap.getName());
 		Assertions.assertEquals("Marc", userLdap.getFirstName());
 		Assertions.assertEquals("Martin", userLdap.getLastName());
-		Assertions.assertEquals("gfi", userLdap.getCompany());
+		Assertions.assertEquals("ligoj", userLdap.getCompany());
 		Assertions.assertEquals("some@where.com", userLdap.getMails().get(0));
 		userResource.delete("mmartin1");
 	}
@@ -610,7 +610,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setFirstName("First");
 		user.setLastName("Last123");
 		user.setName("secondarylogin");
-		user.setCompany("gfi");
+		user.setCompany("ligoj");
 		Assertions.assertThrows(TechnicalException.class, () -> {
 			resource.newApplicationUser(user);
 		});
@@ -627,7 +627,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setFirstName("First");
 		user.setLastName("Last123");
 		user.setName("secondarylogin");
-		user.setCompany("gfi");
+		user.setCompany("ligoj");
 		Assertions.assertThrows(RuntimeException.class, () -> {
 			resource.newApplicationUser(user);
 		});
