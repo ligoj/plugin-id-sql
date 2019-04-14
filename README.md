@@ -3,10 +3,10 @@
 [![Build Status](https://travis-ci.org/ligoj/plugin-id-sql.svg?branch=master)](https://travis-ci.org/ligoj/plugin-id-sql)
 [![Build Status](https://circleci.com/gh/ligoj/plugin-id-sql.svg?style=svg)](https://circleci.com/gh/ligoj/plugin-id-sql)
 [![Build Status](https://semaphoreci.com/api/v1/ligoj/plugin-id-sql/branches/master/shields_badge.svg)](https://semaphoreci.com/ligoj/plugin-id-sql)
-[![Build Status](https://ci.appveyor.com/api/projects/status/5926fmf0p5qp9j16/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/plugin-id-sql/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/e3dcmg5x3x19p8rc/branch/master?svg=true)](https://ci.appveyor.com/project/ligoj/plugin-id-sql/branch/master)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=org.ligoj.plugin%3Aplugin-id-sql&metric=coverage)](https://sonarcloud.io/dashboard?id=org.ligoj.plugin%3Aplugin-id-sql)
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?metric=alert_status&project=org.ligoj.plugin:plugin-id-sql)](https://sonarcloud.io/dashboard/index/org.ligoj.plugin:plugin-id-sql)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/abf810c094e44c0691f71174c707d6ed)](https://www.codacy.com/app/ligoj/plugin-id-sql?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/plugin-id-sql&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a18accd0cbce4daaa69ed9d74346fc32)](https://www.codacy.com/app/ligoj/plugin-id-sql?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ligoj/plugin-id-sql&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/ligoj/plugin-id-sql/badge)](https://www.codefactor.io/repository/github/ligoj/plugin-id-sql)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://fabdouglas.mit-license.org/)
 
