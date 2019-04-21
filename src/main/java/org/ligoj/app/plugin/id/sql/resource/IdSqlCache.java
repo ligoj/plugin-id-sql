@@ -12,7 +12,7 @@ import com.hazelcast.cache.HazelcastCacheManager;
 import com.hazelcast.config.CacheConfig;
 
 /**
- * Cache configuration for LDAP.
+ * Cache configuration for SQL.
  */
 @Component
 public class IdSqlCache implements CacheManagerAware {
