@@ -13,6 +13,7 @@
 	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Ligoj - Plugin ID - SQL</name>
+	<url>https://github.com/ligoj/plugin-id-sql</url>
 
 	<properties>
 	</properties>
