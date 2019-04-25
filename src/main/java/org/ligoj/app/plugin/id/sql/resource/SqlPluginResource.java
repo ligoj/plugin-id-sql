@@ -86,7 +86,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	public static final String PARAMETER_KEY_LENGTH = KEY + ":key-length";
 
 	/**
-	 * Key algorithm. such as <code>PBKDF2WithHmacSHA512<code>.
+	 * Key algorithm. such as <code>PBKDF2WithHmacSHA512</code>.
 	 */
 	public static final String PARAMETER_KEY_ALG = KEY + ":key-alg";
 
