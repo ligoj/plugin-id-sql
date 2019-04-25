@@ -26,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Group LDAP repository
+ * Group SQL repository
  */
 @Component
 public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg, CacheGroup>
 		implements IGroupRepository {
 
 	/**
-	 * Default DN member for new group. This is required for some LDAP implementation where "uniqueMember" attribute is
+	 * Default DN member for new group. This is required for some SQL implementation where "uniqueMember" attribute is
 	 * required for "groupOfUniqueNames" class.
 	 *
 	 * @see <a href="https://msdn.microsoft.com/en-us/library/ms682261(v=vs.85).aspx">MSDN</a>
@@ -60,10 +60,10 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	}
 
 	/**
-	 * Fetch and return all normalized groups. Note the result use cache, so does not reflect the current state of LDAP.
+	 * Fetch and return all normalized groups. Note the result use cache, so does not reflect the current state of SQL.
 	 * Cache manager is involved.
 	 *
-	 * @return the groups. Key is the normalized name, Value is the corresponding LDAP group containing real CN, DN and
+	 * @return the groups. Key is the normalized name, Value is the corresponding SQL group containing real CN, DN and
 	 *         normalized UID members.
 	 */
 	@Override
@@ -73,10 +73,10 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	}
 
 	/**
-	 * Fetch and return all normalized groups. Note the result use cache, so does not reflect the current state of LDAP.
-	 * LDAP.
+	 * Fetch and return all normalized groups. Note the result use cache, so does not reflect the current state of SQL.
+	 * SQL.
 	 *
-	 * @return the groups. Key is the normalized name, Value is the corresponding LDAP group containing real CN, DN and
+	 * @return the groups. Key is the normalized name, Value is the corresponding SQL group containing real CN, DN and
 	 *         normalized UID members.
 	 */
 	@Override
@@ -107,11 +107,11 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	}
 
 	private void removeFromJavaCache(final GroupOrg group) {
-		// Remove the sub groups from LDAP
+		// Remove the sub groups from SQL
 		new ArrayList<>(group.getSubGroups()).stream().map(this::findById).filter(Objects::nonNull)
 				.forEach(child -> removeGroup(child, group.getId()));
 
-		// Remove from the parent LDAP groups
+		// Remove from the parent SQL groups
 		new ArrayList<>(group.getGroups()).forEach(parent -> removeGroup(group, parent));
 
 		// Also, update the raw cache
@@ -123,7 +123,7 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	 * purpose.
 	 *
 	 * @param group
-	 *            the LDAP group.
+	 *            the SQL group.
 	 */
 	@Override
 	public void delete(final GroupOrg group) {

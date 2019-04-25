@@ -37,8 +37,8 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	private IamProvider iamProvider;
 	private UserOrg user;
 	private UserOrg user2;
-	private GroupOrg groupLdap;
-	private GroupOrg groupLdap2;
+	private GroupOrg groupSql;
+	private GroupOrg groupSql2;
 	private Map<String, GroupOrg> groups;
 	private Map<String, CompanyOrg> companies;
 	private Map<String, UserOrg> users;
@@ -64,10 +64,10 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 		groups = new HashMap<>();
 		final Set<String> members = new HashSet<>();
 		members.add("u");
-		groupLdap = new GroupOrg("dn", "Group", members);
-		groups.put("group", groupLdap);
-		groupLdap2 = new GroupOrg("dn2", "Group2", new HashSet<>());
-		groups.put("group2", groupLdap2);
+		groupSql = new GroupOrg("dn", "Group", members);
+		groups.put("group", groupSql);
+		groupSql2 = new GroupOrg("dn2", "Group2", new HashSet<>());
+		groups.put("group2", groupSql2);
 		user = new UserOrg();
 		user.setId("u");
 		user.setFirstName("f");
@@ -101,26 +101,26 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void getLdapData() {
+	public void getSqlData() {
 
 		// Only there for coverage
 		CacheDataType.values();
 		CacheDataType.valueOf(CacheDataType.COMPANY.name());
 
-		final Map<CacheDataType, Map<String, ? extends ResourceOrg>> ldapData = repository.getData();
+		final Map<CacheDataType, Map<String, ? extends ResourceOrg>> sqlData = repository.getData();
 
-		Assertions.assertEquals("Company", ((CompanyOrg) ldapData.get(CacheDataType.COMPANY).get("company")).getName());
-		Assertions.assertEquals("dnc", ((CompanyOrg) ldapData.get(CacheDataType.COMPANY).get("company")).getDn());
-		final GroupOrg groupLdap = (GroupOrg) ldapData.get(CacheDataType.GROUP).get("group");
-		Assertions.assertEquals("dn", groupLdap.getDn());
-		Assertions.assertEquals("group", groupLdap.getId());
-		Assertions.assertEquals("Group", groupLdap.getName());
-		final UserOrg user = (UserOrg) ldapData.get(CacheDataType.USER).get("u");
+		Assertions.assertEquals("Company", ((CompanyOrg) sqlData.get(CacheDataType.COMPANY).get("company")).getName());
+		Assertions.assertEquals("dnc", ((CompanyOrg) sqlData.get(CacheDataType.COMPANY).get("company")).getDn());
+		final GroupOrg groupSql = (GroupOrg) sqlData.get(CacheDataType.GROUP).get("group");
+		Assertions.assertEquals("dn", groupSql.getDn());
+		Assertions.assertEquals("group", groupSql.getId());
+		Assertions.assertEquals("Group", groupSql.getName());
+		final UserOrg user = (UserOrg) sqlData.get(CacheDataType.USER).get("u");
 		Assertions.assertEquals("u", user.getId());
 		Assertions.assertEquals("f", user.getFirstName());
 		Assertions.assertEquals("l", user.getLastName());
 		Assertions.assertEquals("company", user.getCompany());
-		final UserOrg user2 = (UserOrg) ldapData.get(CacheDataType.USER).get("u2");
+		final UserOrg user2 = (UserOrg) sqlData.get(CacheDataType.USER).get("u2");
 		Assertions.assertEquals("u2", user2.getId());
 		Assertions.assertEquals("f", user2.getFirstName());
 		Assertions.assertEquals("l", user2.getLastName());
@@ -131,7 +131,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	public void addUserToGroup() {
 		Assertions.assertEquals(1, user.getGroups().size());
 
-		repository.addUserToGroup(user, groupLdap2);
+		repository.addUserToGroup(user, groupSql2);
 
 		Assertions.assertEquals(2, user.getGroups().size());
 		Assertions.assertTrue(user.getGroups().contains("group2"));
@@ -142,7 +142,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	public void removeUserFromGroup() {
 		Assertions.assertEquals(1, user.getGroups().size());
 
-		repository.removeUserFromGroup(user, groupLdap);
+		repository.removeUserFromGroup(user, groupSql);
 
 		Assertions.assertEquals(0, user.getGroups().size());
 		Assertions.assertTrue(groups.get("group").getMembers().isEmpty());
@@ -150,8 +150,8 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void addGroupToGroup() {
-		final GroupOrg parent = groupLdap2;
-		final GroupOrg child = groupLdap;
+		final GroupOrg parent = groupSql2;
+		final GroupOrg child = groupSql;
 
 		// Check the initial status
 		Assertions.assertEquals(0, child.getSubGroups().size());
@@ -172,8 +172,8 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void removeGroupFromGroup() {
-		final GroupOrg parent = groupLdap2;
-		final GroupOrg child = groupLdap;
+		final GroupOrg parent = groupSql2;
+		final GroupOrg child = groupSql;
 		parent.getSubGroups().add(child.getId());
 		child.getGroups().add(parent.getId());
 
@@ -194,22 +194,22 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void createGroup() {
-		final GroupOrg newGroupLdap = new GroupOrg("dn3", "G3", new HashSet<>());
+		final GroupOrg newGroupSql = new GroupOrg("dn3", "G3", new HashSet<>());
 
-		repository.create(newGroupLdap);
+		repository.create(newGroupSql);
 
-		Mockito.verify(cache).create(newGroupLdap);
-		Assertions.assertEquals(newGroupLdap, groups.get("g3"));
+		Mockito.verify(cache).create(newGroupSql);
+		Assertions.assertEquals(newGroupSql, groups.get("g3"));
 	}
 
 	@Test
 	public void createCompany() {
-		final CompanyOrg newCompanyLdap = new CompanyOrg("dn3", "C3");
+		final CompanyOrg newCompanySql = new CompanyOrg("dn3", "C3");
 
-		repository.create(newCompanyLdap);
+		repository.create(newCompanySql);
 
-		Mockito.verify(cache).create(newCompanyLdap);
-		Assertions.assertEquals(newCompanyLdap, companies.get("c3"));
+		Mockito.verify(cache).create(newCompanySql);
+		Assertions.assertEquals(newCompanySql, companies.get("c3"));
 	}
 
 	@Test

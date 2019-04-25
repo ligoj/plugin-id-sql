@@ -47,12 +47,12 @@ define(function () {
 					}, $fieldset, $simpleInput);
 				};
 			} else {
-				current.$super('registerXServiceSelect2')(configuration, id, 'service/id/ldap/group/');
+				current.$super('registerXServiceSelect2')(configuration, id, 'service/id/sql/group/');
 			}
 		},
 
 		/**
-		 * Live validation of LDAP group, OU and parent.
+		 * Live validation of SQL group, OU and parent.
 		 */
 		validateIdGroupCreateMode: function () {
 			validationManager.reset(_('service:id:group'));

@@ -11,7 +11,6 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.ligoj.app.AbstractAppTest;
 import org.ligoj.app.dao.NodeRepository;
 import org.ligoj.app.dao.ParameterRepository;
 import org.ligoj.app.dao.ParameterValueRepository;
@@ -32,6 +31,7 @@ import org.ligoj.app.model.ParameterValue;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.model.Subscription;
 import org.ligoj.app.plugin.id.model.ContainerScope;
+import org.ligoj.app.plugin.id.resource.AbstractPluginIdTest;
 import org.ligoj.app.plugin.id.resource.IdentityResource;
 import org.ligoj.app.plugin.id.resource.UserOrgResource;
 import org.ligoj.app.plugin.id.sql.dao.CacheSqlRepository;
@@ -51,7 +51,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-public abstract class AbstractSqlPluginResourceTest extends AbstractAppTest {
+public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest {
 	@Autowired
 	protected SqlPluginResource resource;
 
@@ -129,20 +129,20 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractAppTest {
 		basicCreate(subscription2);
 
 		// Checks
-		final GroupOrg groupLdap = getGroup().findById(groupAndProject);
-		Assertions.assertNotNull(groupLdap);
-		Assertions.assertEquals(groupAndProject, groupLdap.getName());
-		Assertions.assertEquals(groupAndProject, groupLdap.getId());
-		Assertions.assertEquals("cn=" + groupAndProject + ",ou=sea,ou=project,dc=sample,dc=com", groupLdap.getDn());
+		final GroupOrg groupSql = getGroup().findById(groupAndProject);
+		Assertions.assertNotNull(groupSql);
+		Assertions.assertEquals(groupAndProject, groupSql.getName());
+		Assertions.assertEquals(groupAndProject, groupSql.getId());
+		Assertions.assertEquals("cn=" + groupAndProject + ",ou=sea,ou=project,dc=sample,dc=com", groupSql.getDn());
 
 		return subscription2;
 	}
 
 	/**
-	 * Reload the LDAP cache
+	 * Reload the SQL cache
 	 */
-	protected void reloadLdapCache() {
-		// Ensure LDAP cache is loaded
+	protected void reloadSqlCache() {
+		// Ensure SQL cache is loaded
 		cacheManager.getCache("id-sql-data").clear();
 		cache.getData();
 		em.flush();
@@ -232,17 +232,17 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractAppTest {
 		basicCreate(subscription2);
 
 		// Checks
-		final GroupOrg groupLdap = getGroup().findById(subGroup);
-		Assertions.assertNotNull(groupLdap);
-		Assertions.assertEquals(subGroup, groupLdap.getName());
+		final GroupOrg groupSql = getGroup().findById(subGroup);
+		Assertions.assertNotNull(groupSql);
+		Assertions.assertEquals(subGroup, groupSql.getName());
 		Assertions.assertEquals("cn=" + subGroup + ",cn=" + parentGroup + ",ou=sea,ou=project,dc=sample,dc=com",
-				groupLdap.getDn());
-		Assertions.assertEquals(subGroup, groupLdap.getId());
-		Assertions.assertEquals(1, groupLdap.getGroups().size());
-		Assertions.assertTrue(groupLdap.getGroups().contains(parentGroup));
-		final GroupOrg groupLdapParent = getGroup().findById(parentGroup);
-		Assertions.assertEquals(1, groupLdapParent.getSubGroups().size());
-		Assertions.assertTrue(groupLdapParent.getSubGroups().contains(subGroup));
+				groupSql.getDn());
+		Assertions.assertEquals(subGroup, groupSql.getId());
+		Assertions.assertEquals(1, groupSql.getGroups().size());
+		Assertions.assertTrue(groupSql.getGroups().contains(parentGroup));
+		final GroupOrg groupSqlParent = getGroup().findById(parentGroup);
+		Assertions.assertEquals(1, groupSqlParent.getSubGroups().size());
+		Assertions.assertTrue(groupSqlParent.getSubGroups().contains(subGroup));
 		return subscription2;
 	}
 

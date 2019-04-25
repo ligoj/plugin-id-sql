@@ -4,8 +4,6 @@
 package org.ligoj.app.plugin.id.sql.resource;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +14,6 @@ import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,37 +23,29 @@ import org.apache.commons.lang3.StringUtils;
 import org.ligoj.app.api.Normalizer;
 import org.ligoj.app.api.SubscriptionStatusWithData;
 import org.ligoj.app.iam.GroupOrg;
-import org.ligoj.app.iam.IamConfiguration;
-import org.ligoj.app.iam.IamConfigurationProvider;
 import org.ligoj.app.iam.IamProvider;
-import org.ligoj.app.iam.UserOrg;
 import org.ligoj.app.model.CacheProjectGroup;
 import org.ligoj.app.model.ContainerType;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.plugin.id.dao.CacheProjectGroupRepository;
 import org.ligoj.app.plugin.id.model.ContainerScope;
+import org.ligoj.app.plugin.id.resource.AbstractPluginIdResource;
 import org.ligoj.app.plugin.id.resource.ContainerScopeResource;
 import org.ligoj.app.plugin.id.resource.ContainerWithScopeVo;
 import org.ligoj.app.plugin.id.resource.GroupResource;
 import org.ligoj.app.plugin.id.resource.IdentityResource;
-import org.ligoj.app.plugin.id.resource.IdentityServicePlugin;
-import org.ligoj.app.plugin.id.resource.UserOrgEditionVo;
-import org.ligoj.app.plugin.id.resource.UserOrgResource;
 import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
 import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
 import org.ligoj.app.resource.ServicePluginLocator;
-import org.ligoj.app.resource.plugin.AbstractToolPluginResource;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -67,8 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
-public class SqlPluginResource extends AbstractToolPluginResource
-		implements IdentityServicePlugin, IamConfigurationProvider {
+public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepository> {
 
 	private static final String PATTERN_PROPERTY = "pattern";
 
@@ -107,17 +95,6 @@ public class SqlPluginResource extends AbstractToolPluginResource
 	 */
 	public static final String PARAMETER_BASE_DN = KEY + ":base-dn";
 
-	/**
-	 * Lock object used to synchronize the creation.
-	 */
-	private static final Object USER_LOCK = new Object();
-
-	@Autowired
-	protected ApplicationContext context;
-
-	@Autowired
-	protected UserOrgResource userResource;
-
 	@Autowired
 	protected GroupResource groupResource;
 
@@ -134,21 +111,11 @@ public class SqlPluginResource extends AbstractToolPluginResource
 	protected ServicePluginLocator servicePluginLocator;
 
 	@Autowired
+	@Getter
 	protected SqlPluginResource self;
 
-	/**
-	 * Available node configurations. Key is the node identifier.
-	 */
-	private Map<String, IamConfiguration> nodeConfigurations = new HashMap<>();
-
-	/**
-	 * Build a user SQL repository from the given node.
-	 *
-	 * @param node
-	 *            The node, also used as cache key.
-	 * @return The {@link UserSqlRepository} instance. Cache is involved.
-	 */
-	private UserSqlRepository getUserRepository(@CacheKey final String node) {
+	@Override
+	protected UserSqlRepository getUserRepository(final String node) {
 		log.info("Build SQL template for node {}", node);
 		final Map<String, String> parameters = pvResource.getNodeParameters(node);
 
@@ -300,8 +267,7 @@ public class SqlPluginResource extends AbstractToolPluginResource
 	/**
 	 * Validate the group settings.
 	 *
-	 * @param parameters
-	 *            the administration parameters.
+	 * @param parameters the administration parameters.
 	 * @return real group name.
 	 */
 	protected INamableBean<String> validateGroup(final Map<String, String> parameters) {
@@ -330,8 +296,7 @@ public class SqlPluginResource extends AbstractToolPluginResource
 	/**
 	 * Search the SQL Groups matching to the given criteria and for type "Project". Node identifier is ignored for now.
 	 *
-	 * @param criteria
-	 *            the search criteria.
+	 * @param criteria the search criteria.
 	 * @return Groups matching the criteria.
 	 * @see ContainerScope#TYPE_PROJECT
 	 */
@@ -408,27 +373,9 @@ public class SqlPluginResource extends AbstractToolPluginResource
 		return result;
 	}
 
-	@Override
-	public IamConfiguration getConfiguration(final String node) {
-		self.ensureCachedConfiguration(node);
-		return nodeConfigurations.computeIfAbsent(node, this::refreshConfiguration);
-	}
-
 	@CacheResult(cacheName = "id-sql-configuration")
 	public boolean ensureCachedConfiguration(@CacheKey final String node) {
-		refreshConfiguration(node);
-		return true;
-	}
-
-	private IamConfiguration refreshConfiguration(final String node) {
-		return nodeConfigurations.compute(node, (n, m) -> {
-			final IamConfiguration configuration = new IamConfiguration();
-			final UserSqlRepository repository = getUserRepository(node);
-			configuration.setUserRepository(repository);
-			configuration.setCompanyRepository(repository.getCompanyRepository());
-			configuration.setGroupRepository(repository.getGroupRepository());
-			return configuration;
-		});
+		return super.ensureCachedConfiguration(node);
 	}
 
 	/**
@@ -438,139 +385,5 @@ public class SqlPluginResource extends AbstractToolPluginResource
 	 */
 	private GroupSqlRepository getGroup() {
 		return (GroupSqlRepository) iamProvider[0].getConfiguration().getGroupRepository();
-	}
-
-	@Override
-	public Authentication authenticate(final Authentication authentication, final String node, final boolean primary) {
-		final UserSqlRepository repository = (UserSqlRepository) self.getConfiguration(node).getUserRepository();
-
-		// Authenticate the user
-		if (repository.authenticate(authentication.getName(), (String) authentication.getCredentials())) {
-			// Return a new authentication based on resolved application user
-			return primary ? authentication
-					: new UsernamePasswordAuthenticationToken(toApplicationUser(repository, authentication), null);
-		}
-		throw new BadCredentialsException("");
-	}
-
-	/**
-	 * Check the authentication, then create or get the application user matching to the given account.
-	 *
-	 * @param repository
-	 *            Repository used to authenticate the user, and also to use to fetch the user attributes.
-	 * @param authentication
-	 *            The current authentication.
-	 * @return A not <code>null</code> application user.
-	 */
-	protected String toApplicationUser(final UserSqlRepository repository, final Authentication authentication) {
-		// Check the authentication
-		final UserOrg account = repository.findOneBy("id", authentication.getName());
-
-		// Check at least one mail is present
-		if (account.getMails().isEmpty()) {
-			// Mails are required to proceed the authentication
-			log.info("Account '{} [{} {}]' has no mail", account.getId(), account.getFirstName(),
-					account.getLastName());
-			throw new NotAuthorizedException("ambiguous-account-no-mail");
-		}
-
-		// Find the right application user
-		return toApplicationUser(account);
-	}
-
-	/**
-	 * Create or get the application user matching to the given account.
-	 *
-	 * @param account
-	 *            The account from the authentication.
-	 * @return A not <code>null</code> application user.
-	 */
-	protected String toApplicationUser(final UserOrg account) {
-		// Find the user by the mail in the primary repository
-		final List<UserOrg> usersByMail = userResource.findAllBy("mails", account.getMails().get(0));
-		if (usersByMail.isEmpty()) {
-			// No more try, account can be created in the application repository with a free login
-			return newApplicationUser(account);
-		}
-		if (usersByMail.size() == 1) {
-			// Everything is checked, account can be merged into the existing application user
-			userResource.mergeUser(usersByMail.get(0), account);
-			return usersByMail.get(0).getId();
-		}
-
-		// Too many matching mail
-		log.info("Account '{} [{} {}]' has too many mails ({}), expected one", account.getId(), account.getFirstName(),
-				account.getLastName(), usersByMail.size());
-		throw new NotAuthorizedException("ambiguous-account-too-many-mails");
-
-	}
-
-	/**
-	 * Create the application user from the actual account.
-	 *
-	 * @param account
-	 *            The account from the authentication.
-	 * @return The new application user.
-	 */
-	protected String newApplicationUser(final UserOrg account) {
-		synchronized (USER_LOCK) {
-
-			// Copy the data from the authenticated account to the application account
-			final UserOrgEditionVo userEdition = new UserOrgEditionVo();
-			account.copy(userEdition);
-			userEdition.setGroups(Collections.emptyList());
-			userEdition.setMail(account.getMails().get(0));
-
-			// Assign a free login
-			userEdition.setName(nextFreeLogin(toLogin(account)));
-
-			// This user can be created in the primary repository
-			userResource.saveOrUpdate(userEdition);
-
-			return userEdition.getId();
-		}
-	}
-
-	/**
-	 * Find a free application login from a base login. Primary repository is checked to reclaim a free login.
-	 *
-	 * @param login
-	 *            The base login name.
-	 * @return a free login inside the primary repository.
-	 */
-	protected String nextFreeLogin(final String login) {
-		int suffix = 0;
-		UserOrg user;
-		String nextLogin;
-		do {
-			nextLogin = login + (suffix == 0 ? "" : suffix);
-			user = userResource.findByIdNoCache(nextLogin);
-			suffix++;
-		} while (user != null);
-
-		// No user found for this login
-		return nextLogin;
-	}
-
-	/**
-	 * Generate a application login from an account.
-	 *
-	 * @param account
-	 *            The current authenticated account in this security provider.
-	 * @return a corresponding application login candidate from an account.
-	 */
-	protected String toLogin(final UserOrg account) {
-		final String trimFirstName = normalize(account.getFirstName());
-		final String trimLastName = normalize(account.getLastName());
-		if (trimFirstName.length() * trimLastName.length() == 0) {
-			// Unable to build a valid login from these attributes
-			throw new NotAuthorizedException("cannot-build-application-login");
-		}
-
-		return trimFirstName.substring(0, 1) + trimLastName;
-	}
-
-	private String normalize(final String string) {
-		return StringUtils.trimToEmpty(Normalizer.normalize(string).replace("[^\\w\\d]", " ").replace("  ", " "));
 	}
 }

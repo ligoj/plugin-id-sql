@@ -23,10 +23,10 @@ public class CacheSqlRepository extends AbstractMemCacheRepository {
 	protected CacheSqlRepository self = this;
 
 	/**
-	 * Reset the database cache with the LDAP data. Note there is no synchronization for this method. Initial first
+	 * Reset the database cache with the SQL data. Note there is no synchronization for this method. Initial first
 	 * concurrent calls may note involve the cache.
 	 *
-	 * @return The cached LDAP data..
+	 * @return The cached SQL data..
 	 */
 	@Override
 	public Map<CacheDataType, Map<String, ? extends ResourceOrg>> getData() {
@@ -35,7 +35,7 @@ public class CacheSqlRepository extends AbstractMemCacheRepository {
 	}
 
 	/**
-	 * Ensure the fresh data computed when there is no cached LDAP data.
+	 * Ensure the fresh data computed when there is no cached SQL data.
 	 *
 	 * @return <code>true</code>, required by JSR-107.
 	 */

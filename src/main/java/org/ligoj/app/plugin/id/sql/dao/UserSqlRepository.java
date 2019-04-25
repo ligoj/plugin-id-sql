@@ -60,7 +60,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * User LDAP repository
+ * User SQL repository
  */
 @Slf4j
 public class UserSqlRepository implements IUserRepository {
@@ -204,7 +204,7 @@ public class UserSqlRepository implements IUserRepository {
 	 * Return DN from entry.
 	 *
 	 * @param entry
-	 *            LDAP entry to convert to DN.
+	 *            SQL entry to convert to DN.
 	 * @return DN from entry.
 	 */
 	public Name buildDn(final UserOrg entry) {
@@ -281,37 +281,37 @@ public class UserSqlRepository implements IUserRepository {
 			final String criteria, final Set<UserOrg> result, final Map<String, UserOrg> users) {
 		// Filter by company for each members
 		for (final String member : members) {
-			final UserOrg userLdap = users.get(member);
+			final UserOrg userSql = users.get(member);
 
 			// User is always found since #findAll() ensure the members of the groups exist
-			addFilteredByCompaniesAndPattern(companies, criteria, result, userLdap);
+			addFilteredByCompaniesAndPattern(companies, criteria, result, userSql);
 		}
 
 	}
 
 	private void addFilteredByCompaniesAndPattern(final Set<String> companies, final String criteria,
-			final Set<UserOrg> result, final UserOrg userLdap) {
-		final List<CompanyOrg> userCompanies = companyRepository.findAll().get(userLdap.getCompany()).getCompanyTree();
+			final Set<UserOrg> result, final UserOrg userSql) {
+		final List<CompanyOrg> userCompanies = companyRepository.findAll().get(userSql.getCompany()).getCompanyTree();
 		if (userCompanies.stream().map(CompanyOrg::getId).anyMatch(companies::contains)) {
-			addFilteredByPattern(criteria, result, userLdap);
+			addFilteredByPattern(criteria, result, userSql);
 		}
 	}
 
-	private void addFilteredByPattern(final String criteria, final Set<UserOrg> result, final UserOrg userLdap) {
-		if (criteria == null || matchPattern(userLdap, criteria)) {
+	private void addFilteredByPattern(final String criteria, final Set<UserOrg> result, final UserOrg userSql) {
+		if (criteria == null || matchPattern(userSql, criteria)) {
 			// Company and pattern match
-			result.add(userLdap);
+			result.add(userSql);
 		}
 	}
 
 	/**
 	 * Indicates the given user match to the given pattern.
 	 */
-	private boolean matchPattern(final UserOrg userLdap, final String criteria) {
-		return StringUtils.containsIgnoreCase(userLdap.getFirstName(), criteria)
-				|| StringUtils.containsIgnoreCase(userLdap.getLastName(), criteria)
-				|| StringUtils.containsIgnoreCase(userLdap.getId(), criteria) || !userLdap.getMails().isEmpty()
-						&& StringUtils.containsIgnoreCase(userLdap.getMails().get(0), criteria);
+	private boolean matchPattern(final UserOrg userSql, final String criteria) {
+		return StringUtils.containsIgnoreCase(userSql.getFirstName(), criteria)
+				|| StringUtils.containsIgnoreCase(userSql.getLastName(), criteria)
+				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria) || !userSql.getMails().isEmpty()
+						&& StringUtils.containsIgnoreCase(userSql.getMails().get(0), criteria);
 	}
 
 	@Override
@@ -411,7 +411,7 @@ public class UserSqlRepository implements IUserRepository {
 	 * @param principal
 	 *            Principal user requesting the lock.
 	 * @param user
-	 *            The LDAP user to disable.
+	 *            The SQL user to disable.
 	 * @param isolate
 	 *            When <code>true</code>, the user will be isolated in addition.
 	 */

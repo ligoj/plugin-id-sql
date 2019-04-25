@@ -15,7 +15,7 @@ import com.hazelcast.config.CacheConfig;
  * Test cache test.
  */
 @Component
-public class IdLdapTestCache implements CacheManagerAware {
+public class IdSqlTestCache implements CacheManagerAware {
 
 	@Override
 	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {

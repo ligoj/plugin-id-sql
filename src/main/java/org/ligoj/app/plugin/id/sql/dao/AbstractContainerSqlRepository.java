@@ -33,7 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * A LDAP container repository.
+ * A SQL container repository.
  *
  * @param <T>
  *            The container type.
@@ -76,7 +76,7 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 	protected abstract CacheContainerRepository<C> getCacheRepository();
 
 	/**
-	 * Create a new container bean. Not in LDAP repository.
+	 * Create a new container bean. Not in SQL repository.
 	 *
 	 * @param dn
 	 *            The unique DN of the container.

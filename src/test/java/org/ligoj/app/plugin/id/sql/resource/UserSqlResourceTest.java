@@ -1145,7 +1145,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	protected CacheUser checkUnlockedBefore() {
 		initSpringSecurityContext(DEFAULT_USER);
 
-		// Restore lock status from LDAP
+		// Restore lock status from SQL
 		final UserSqlCredential credential = credentialRepository.findBy("user.id", "alongchu");
 		credential.setValue("secret");
 		credential.setLocked(null);
@@ -1187,7 +1187,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertTrue(getGroup().findAll().get("ligoj-gstack").getMembers().contains("alongchu"));
 		checker.accept(getUser().findByIdNoCache("alongchu"));
 
-		// Check in the status in the LDAP
+		// Check in the status in the SQL
 		final CacheUser result = getContext(base, "alongchu");
 
 		Assertions.assertNull(credentialRepository.findBy("user", result).getValue());

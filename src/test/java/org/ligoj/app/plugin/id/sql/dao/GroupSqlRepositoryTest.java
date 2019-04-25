@@ -69,23 +69,23 @@ public class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	public void removeUser() {
-		final GroupSqlRepository groupRepository = newGroupLdapRepository();
+		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		removeUser(groupRepository);
 	}
 
 	@Test
 	public void removeGroup() {
-		final GroupSqlRepository groupRepository = newGroupLdapRepository();
+		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		groupRepository.removeGroup(new GroupOrg("any", "any", null), "DIG RHA");
 	}
 
 	@Test
 	public void addGroup() {
-		final GroupSqlRepository groupRepository = newGroupLdapRepository();
+		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		groupRepository.addGroup(new GroupOrg("dc=any", "any", null), "DIG RHA");
 	}
 
-	private GroupSqlRepository newGroupLdapRepository() {
+	private GroupSqlRepository newGroupSqlRepository() {
 		final GroupSqlRepository groupRepository = new GroupSqlRepository() {
 			@Override
 			public GroupOrg findById(final String name) {

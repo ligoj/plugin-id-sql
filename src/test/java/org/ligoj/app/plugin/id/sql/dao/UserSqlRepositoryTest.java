@@ -69,10 +69,10 @@ public class UserSqlRepositoryTest extends AbstractJpaTest {
 		final UserSqlRepository repository = new UserSqlRepository() {
 			@Override
 			public UserOrg findById(final String login) {
-				final UserOrg userLdap = new UserOrg();
-				userLdap.setId(login);
-				userLdap.setFirstName("First");
-				return userLdap;
+				final UserOrg userSql = new UserOrg();
+				userSql.setId(login);
+				userSql.setFirstName("First");
+				return userSql;
 			}
 
 		};

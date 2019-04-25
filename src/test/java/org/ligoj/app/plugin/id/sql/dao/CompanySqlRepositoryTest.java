@@ -98,7 +98,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void newLdapName() {
+	public void newSqlName() {
 		Assertions.assertThrows(TechnicalException.class, () -> repository.newLdapName("-invalid-"));
 	}
 

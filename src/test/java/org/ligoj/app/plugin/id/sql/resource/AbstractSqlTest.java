@@ -18,7 +18,7 @@ import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
 import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
 
 /**
- * Test for LDAP resources.
+ * Test for SQL resources.
  */
 public abstract class AbstractSqlTest extends AbstractAppTest {
 

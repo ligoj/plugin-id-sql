@@ -88,7 +88,7 @@ public class SqlPluginResourceZDeleteTest extends AbstractSqlPluginResourceTest 
 		Assertions.assertEquals(0, resource.findGroupsByName("sea-parent-for-2deletion").size());
 		Assertions.assertNull(getGroup().findAll().get("sea-parent-for-2deletion"));
 
-		// Check the LDAP content
+		// Check the SQL content
 		Assertions.assertNull(((GroupSqlRepository) getGroup()).findAllNoCache().get("sea-parent-for-2deletion"));
 	}
 }

@@ -23,15 +23,10 @@ import org.ligoj.app.model.ParameterValue;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.model.Subscription;
 import org.ligoj.app.plugin.id.resource.IdentityResource;
-import org.ligoj.app.plugin.id.resource.UserOrgEditionVo;
-import org.ligoj.app.plugin.id.resource.UserOrgResource;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.resource.BusinessException;
-import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -298,11 +293,11 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		basicCreate(subscription2);
 
 		// Checks
-		final GroupOrg groupLdap = getGroup().findById("some-new-project");
-		Assertions.assertNotNull(groupLdap);
-		Assertions.assertEquals("some-new-project", groupLdap.getName());
-		Assertions.assertEquals("cn=some-new-project,ou=some,ou=project,dc=sample,dc=com", groupLdap.getDn());
-		Assertions.assertEquals("some-new-project", groupLdap.getId());
+		final GroupOrg groupSql = getGroup().findById("some-new-project");
+		Assertions.assertNotNull(groupSql);
+		Assertions.assertEquals("some-new-project", groupSql.getName());
+		Assertions.assertEquals("cn=some-new-project,ou=some,ou=project,dc=sample,dc=com", groupSql.getDn());
+		Assertions.assertEquals("some-new-project", groupSql.getId());
 
 		resource.delete(subscription2.getId(), true);
 	}
@@ -433,13 +428,13 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	public void acceptNotMatch() {
-		final Node ldap = new Node();
-		ldap.setId("service:id:sql:test");
-		ldap.setRefined(nodeRepository.findOneExpected("service:id:sql"));
-		ldap.setName("ID SQL Test");
-		nodeRepository.saveAndFlush(ldap);
+		final Node sql = new Node();
+		sql.setId("service:id:sql:test");
+		sql.setRefined(nodeRepository.findOneExpected("service:id:sql"));
+		sql.setName("ID SQL Test");
+		nodeRepository.saveAndFlush(sql);
 		final ParameterValue parameterValue = new ParameterValue();
-		parameterValue.setNode(ldap);
+		parameterValue.setNode(sql);
 		parameterValue.setParameter(parameterRepository.findOneExpected("service:id:uid-pattern"));
 		parameterValue.setData("-nomatch-");
 		em.persist(parameterValue);
@@ -449,12 +444,12 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	public void accept() {
-		final Node ldap = new Node();
-		ldap.setId("service:id:sql:test");
-		ldap.setRefined(nodeRepository.findOneExpected("service:id:sql"));
-		ldap.setName("ID SQL Test");
-		nodeRepository.saveAndFlush(ldap);
-		persistParameter(ldap, IdentityResource.PARAMETER_UID_PATTERN, "some-.*-text");
+		final Node sql = new Node();
+		sql.setId("service:id:sql:test");
+		sql.setRefined(nodeRepository.findOneExpected("service:id:sql"));
+		sql.setName("ID SQL Test");
+		nodeRepository.saveAndFlush(sql);
+		persistParameter(sql, IdentityResource.PARAMETER_UID_PATTERN, "some-.*-text");
 		Assertions.assertTrue(resource.accept(new UsernamePasswordAuthenticationToken("some-awesome-text", ""),
 				"service:id:sql:test"));
 	}
@@ -475,7 +470,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	public void authenticateSecondaryMock() {
-		// Create a new LDAP node plugged to the primary node
+		// Create a new SQL node plugged to the primary node
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("mmartin", "complexOne");
 		final Authentication localAuthentication = resource.authenticate(authentication, "service:id:sql:secondary",
 				false);
@@ -493,7 +488,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setCompany("ligoj");
 		user.setDepartment("3890");
 		user.setLocalId("8234");
-		Assertions.assertEquals("mmartin", resource.toApplicationUser(user));
+		Assertions.assertEquals("mmartin", toApplicationUser(resource, user));
 
 		final UserOrg userLdap = userResource.findByIdNoCache("mmartin");
 		Assertions.assertEquals("mmartin", userLdap.getName());
@@ -511,7 +506,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setLastName("Last123");
 		user.setCompany("ligoj");
 		user.setName("secondarylogin");
-		Assertions.assertEquals("flast123", resource.toApplicationUser(user));
+		Assertions.assertEquals("flast123", toApplicationUser(resource, user));
 
 		final UserOrg userLdap = userResource.findByIdNoCache("flast123");
 		Assertions.assertEquals("flast123", userLdap.getName());
@@ -531,7 +526,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setLastName("Martin");
 		user.setCompany("ligoj");
 		user.setName("secondarylogin");
-		Assertions.assertEquals("mmartin1", resource.toApplicationUser(user));
+		Assertions.assertEquals("mmartin1", toApplicationUser(resource, user));
 
 		final UserOrg userLdap = userResource.findByIdNoCache("mmartin1");
 		Assertions.assertEquals("mmartin1", userLdap.getName());
@@ -551,7 +546,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		user.setLastName("Last123");
 		user.setName("secondarylogin");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
-			resource.toApplicationUser(user);
+			toApplicationUser(resource, user);
 		});
 	}
 
@@ -560,7 +555,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		final UserOrg user = new UserOrg();
 		user.setFirstName("First");
 		user.setLastName("Last123");
-		Assertions.assertEquals("flast123", resource.toLogin(user));
+		Assertions.assertEquals("flast123", toLogin(resource, user));
 	}
 
 	@Test
@@ -568,7 +563,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		final UserOrg user = new UserOrg();
 		user.setLastName("Last123");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
-			resource.toLogin(user);
+			toLogin(resource, user);
 		});
 	}
 
@@ -577,7 +572,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		final UserOrg user = new UserOrg();
 		user.setFirstName("First");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
-			resource.toLogin(user);
+			toLogin(resource, user);
 		});
 	}
 
@@ -594,42 +589,6 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("jdoe4", "any");
 		Assertions.assertThrows(BadCredentialsException.class, () -> {
 			resource.authenticate(authentication, "service:id:sql:secondary", false);
-		});
-	}
-
-	@Test
-	public void newApplicationUserSaveFail() {
-		final SqlPluginResource resource = new SqlPluginResource();
-		resource.userResource = Mockito.mock(UserOrgResource.class);
-		Mockito.when(resource.userResource.findByIdNoCache("flast123")).thenReturn(null);
-		Mockito.doThrow(new TechnicalException("")).when(resource.userResource)
-				.saveOrUpdate(ArgumentMatchers.any(UserOrgEditionVo.class));
-
-		final UserOrg user = new UserOrg();
-		user.setMails(Collections.singletonList("fabrice.daugan@sample.com"));
-		user.setFirstName("First");
-		user.setLastName("Last123");
-		user.setName("secondarylogin");
-		user.setCompany("ligoj");
-		Assertions.assertThrows(TechnicalException.class, () -> {
-			resource.newApplicationUser(user);
-		});
-	}
-
-	@Test
-	public void newApplicationUserNextLoginFail() {
-		final SqlPluginResource resource = new SqlPluginResource();
-		resource.userResource = Mockito.mock(UserOrgResource.class);
-		Mockito.doThrow(new RuntimeException()).when(resource.userResource).findByIdNoCache("flast123");
-
-		final UserOrg user = new UserOrg();
-		user.setMails(Collections.singletonList("fabrice.daugan@sample.com"));
-		user.setFirstName("First");
-		user.setLastName("Last123");
-		user.setName("secondarylogin");
-		user.setCompany("ligoj");
-		Assertions.assertThrows(RuntimeException.class, () -> {
-			resource.newApplicationUser(user);
 		});
 	}
 }

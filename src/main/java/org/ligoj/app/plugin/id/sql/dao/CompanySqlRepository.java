@@ -52,7 +52,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 
 	/**
 	 * Fetch and return all normalized companies. Note the result uses cache, so does not reflect the current state of
-	 * LDAP. Cache manager is involved.
+	 * SQL. Cache manager is involved.
 	 *
 	 * @return the companies. Key is the normalized name.
 	 */
@@ -64,7 +64,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 
 	/**
 	 * Fetch and return all normalized companies. Note the result use cache, so does not reflect the current state of
-	 * LDAP.
+	 * SQL.
 	 *
 	 * @return the companies. Key is the normalized name.
 	 */
@@ -105,7 +105,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 		try {
 			return new LdapName(dn);
 		} catch (InvalidNameException e) {
-			throw new TechnicalException("Invalid SQL to LDAP pattern");
+			throw new TechnicalException("Invalid SQL to SQL pattern");
 		}
 	}
 
@@ -142,8 +142,8 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 	public void delete(final CompanyOrg container) {
 
 		/*
-		 * Remove from this company, all companies within (sub LDAP DN) this company. This operation is needed since we
-		 * are not rebuilding the cache from the LDAP. This save a lot of computations.
+		 * Remove from this company, all companies within (sub SQL DN) this company. This operation is needed since we
+		 * are not rebuilding the cache from the SQL. This save a lot of computations.
 		 */
 		findAll().values().stream().filter(g -> {
 			return DnUtils.equalsOrParentOf(container.getDn(), g.getDn());
