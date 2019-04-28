@@ -65,6 +65,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserSqlRepository implements IUserRepository {
 
+	private static final String USER_ID = "user.id";
+
 	private static final Map<String, Comparator<UserOrg>> COMPARATORS = new HashMap<>();
 
 	/**
@@ -173,8 +175,7 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Return all user entries.
 	 *
-	 * @param groups
-	 *            The existing groups. They will be be used to complete the membership of each returned user.
+	 * @param groups The existing groups. They will be be used to complete the membership of each returned user.
 	 * @return all user entries. Key is the user login.
 	 */
 	@Override
@@ -203,8 +204,7 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Return DN from entry.
 	 *
-	 * @param entry
-	 *            SQL entry to convert to DN.
+	 * @param entry SQL entry to convert to DN.
 	 * @return DN from entry.
 	 */
 	public Name buildDn(final UserOrg entry) {
@@ -215,10 +215,8 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Return DN from entry.
 	 *
-	 * @param login
-	 *            The user login to create.
-	 * @param companyDn
-	 *            The target company DN.
+	 * @param login     The user login to create.
+	 * @param companyDn The target company DN.
 	 * @return DN from entry.
 	 */
 	private String buildDn(final String login, final String companyDn) {
@@ -227,14 +225,14 @@ public class UserSqlRepository implements IUserRepository {
 
 	private UserOrg toUser(final CacheUser entity) {
 		final UserOrg user = new UserOrg();
-		user.setDn(buildDn(entity.getId(), entity.getCompany().getDescription()).toString());
+		user.setDn(buildDn(entity.getId(), entity.getCompany().getDescription()));
 		user.setLastName(entity.getLastName());
 		user.setFirstName(entity.getFirstName());
 		user.setId(entity.getId());
 		user.setCompany(entity.getCompany().getId());
 
 		// Copy the credential data
-		final UserSqlCredential credential = credentialRepository.findBy("user.id", entity.getId());
+		final UserSqlCredential credential = credentialRepository.findBy(USER_ID, entity.getId());
 		user.setSecured(Optional.ofNullable(credential).map(UserSqlCredential::getValue).orElse(null) != null);
 		user.setMails(Arrays.asList(StringUtils.split(StringUtils.defaultIfBlank(entity.getMails(), ""), ",;")));
 		user.setLocked(Optional.ofNullable(credential).map(UserSqlCredential::getLocked).orElse(null));
@@ -310,8 +308,8 @@ public class UserSqlRepository implements IUserRepository {
 	private boolean matchPattern(final UserOrg userSql, final String criteria) {
 		return StringUtils.containsIgnoreCase(userSql.getFirstName(), criteria)
 				|| StringUtils.containsIgnoreCase(userSql.getLastName(), criteria)
-				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria) || !userSql.getMails().isEmpty()
-						&& StringUtils.containsIgnoreCase(userSql.getMails().get(0), criteria);
+				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria)
+				|| !userSql.getMails().isEmpty() && StringUtils.containsIgnoreCase(userSql.getMails().get(0), criteria);
 	}
 
 	@Override
@@ -326,10 +324,8 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Add the user from the given groups. Cache is also updated.
 	 *
-	 * @param user
-	 *            The user to add to the given groups.
-	 * @param groups
-	 *            the groups to add, normalized.
+	 * @param user   The user to add to the given groups.
+	 * @param groups the groups to add, normalized.
 	 */
 	protected void addUserToGroups(final UserOrg user, final Collection<String> groups) {
 		groups.forEach(g -> groupRepository.addUser(user, g));
@@ -338,10 +334,8 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Remove the user from the given groups.Cache is also updated.
 	 *
-	 * @param user
-	 *            The user to remove from the given groups.
-	 * @param groups
-	 *            the groups to remove, normalized.
+	 * @param user   The user to remove from the given groups.
+	 * @param groups the groups to remove, normalized.
 	 */
 	protected void removeUserFromGroups(final UserOrg user, final Collection<String> groups) {
 		groups.forEach(g -> groupRepository.removeUser(user, g));
@@ -358,7 +352,7 @@ public class UserSqlRepository implements IUserRepository {
 	@Override
 	public void delete(final UserOrg user) {
 		// Remove attached credentials
-		credentialRepository.deleteAllBy("user.id", user.getId());
+		credentialRepository.deleteAllBy(USER_ID, user.getId());
 
 		// Remove user from all groups
 		removeUserFromGroups(user, user.getGroups());
@@ -408,12 +402,9 @@ public class UserSqlRepository implements IUserRepository {
 	 * <li>Set the disabled flag.</li>
 	 * </ul>
 	 *
-	 * @param principal
-	 *            Principal user requesting the lock.
-	 * @param user
-	 *            The SQL user to disable.
-	 * @param isolate
-	 *            When <code>true</code>, the user will be isolated in addition.
+	 * @param principal Principal user requesting the lock.
+	 * @param user      The SQL user to disable.
+	 * @param isolate   When <code>true</code>, the user will be isolated in addition.
 	 */
 	private void lock(final String principal, final UserOrg user, final boolean isolate) {
 		if (user.getLockedBy() == null) {
@@ -435,7 +426,7 @@ public class UserSqlRepository implements IUserRepository {
 	}
 
 	private UserSqlCredential createAsNeeded(final UserOrg user) {
-		return Optional.ofNullable(credentialRepository.findBy("user.id", user.getId())).orElseGet(() -> {
+		return Optional.ofNullable(credentialRepository.findBy(USER_ID, user.getId())).orElseGet(() -> {
 			final UserSqlCredential result = new UserSqlCredential();
 			result.setUser(cacheUserRepository.findOne(user.getId()));
 			credentialRepository.save(result);
@@ -467,14 +458,14 @@ public class UserSqlRepository implements IUserRepository {
 	@Override
 	public boolean authenticate(final String name, final String password) {
 		log.info("Authenticating {} ...", name);
-		final UserSqlCredential credential = credentialRepository.findBy("user.id", name);
+		final UserSqlCredential credential = credentialRepository.findBy(USER_ID, name);
 
 		final String salt;
 		final String value;
 		if (credential == null) {
 			// Time resisting attack
-			salt = StringUtils.repeat('-', saltLength);
-			value = StringUtils.repeat('0', 16);
+			salt = "-".repeat(saltLength);
+			value = "0".repeat(16);
 		} else {
 			salt = credential.getSalt();
 			value = StringUtils.defaultString(credential.getValue(), "");
@@ -495,7 +486,7 @@ public class UserSqlRepository implements IUserRepository {
 
 	@Override
 	public String getToken(final String login) {
-		return Optional.ofNullable(credentialRepository.findBy("user.id", login)).map(UserSqlCredential::getValue)
+		return Optional.ofNullable(credentialRepository.findBy(USER_ID, login)).map(UserSqlCredential::getValue)
 				.orElse(null);
 	}
 
@@ -514,18 +505,15 @@ public class UserSqlRepository implements IUserRepository {
 	 * The example uses a Password Based Key Derivation Function 2 (PBKDF2), as discussed in the Password Storage Cheat
 	 * Sheet.
 	 *
-	 * @param password
-	 *            Password to hash.
-	 * @param salt
-	 *            Should be random data and vary for each user. It should be at least 32 bytes long. Remember to save
-	 *            the salt with the hashed password!
-	 * @param iterations
-	 *            Specifies how many times the PBKDF2 executes its underlying algorithm. A higher value is safer. You
-	 *            need to experiment on hardware equivalent to your production systems. As a starting point, find a
-	 *            value that requires one half second to execute. Scaling to huge number of users is beyond the scope of
-	 *            this document. Remember to save the value of iterations with the hashed password!
-	 * @param keyLength
-	 *            Key length. 256 is safe.
+	 * @param password   Password to hash.
+	 * @param salt       Should be random data and vary for each user. It should be at least 32 bytes long. Remember to
+	 *                   save the salt with the hashed password!
+	 * @param iterations Specifies how many times the PBKDF2 executes its underlying algorithm. A higher value is safer.
+	 *                   You need to experiment on hardware equivalent to your production systems. As a starting point,
+	 *                   find a value that requires one half second to execute. Scaling to huge number of users is
+	 *                   beyond the scope of this document. Remember to save the value of iterations with the hashed
+	 *                   password!
+	 * @param keyLength  Key length. 256 is safe.
 	 * @return
 	 * @see <a href="https://www.owasp.org/index.php/Hashing_Java">www.owasp.org<a>
 	 */

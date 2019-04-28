@@ -89,7 +89,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		parameters.put(IdentityResource.PARAMETER_GROUP, "broken");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.validateGroup(parameters);
-		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOW_ID);
+		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -368,7 +368,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.link(this.subscription);
-		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOW_ID);
+		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.link(this.subscription);
-		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOW_ID);
+		}), IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test

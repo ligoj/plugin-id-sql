@@ -96,6 +96,7 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
 				StandardCharsets.UTF_8.name());
 		cacheManager.getCache("container-scopes").clear();
+		cacheManager.getCache("id-configuration").clear();
 		cacheManager.getCache("id-sql-data").clear();
 
 		// Only with Spring context

@@ -665,7 +665,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -682,7 +682,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "group", BusinessException.KEY_UNKNOW_ID);
+		}), "group", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -727,7 +727,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("any");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -744,7 +744,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("mlavoine");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -760,7 +760,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("any");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -774,7 +774,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -788,7 +788,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "company", BusinessException.KEY_UNKNOW_ID);
+		}), "company", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -817,7 +817,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("fdaugan");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "group", BusinessException.KEY_UNKNOW_ID);
+		}), "group", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test
@@ -833,7 +833,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("assist");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.update(user);
-		}), "id", BusinessException.KEY_UNKNOW_ID);
+		}), "id", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	/**
@@ -953,7 +953,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext("assist");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.delete("any");
-		}), "id", BusinessException.KEY_UNKNOW_ID);
+		}), "id", BusinessException.KEY_UNKNOWN_ID);
 	}
 
 	@Test

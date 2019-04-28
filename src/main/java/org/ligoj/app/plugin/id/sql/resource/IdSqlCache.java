@@ -19,7 +19,6 @@ public class IdSqlCache implements CacheManagerAware {
 
 	@Override
 	public void onCreate(final HazelcastCacheManager cacheManager, final Function<String, CacheConfig<?, ?>> provider) {
-		cacheManager.createCache("id-sql-configuration", provider.apply("id-sql-configuration"));
 		cacheManager.createCache("id-sql-data", provider.apply("id-sql-data"));
 	}
 

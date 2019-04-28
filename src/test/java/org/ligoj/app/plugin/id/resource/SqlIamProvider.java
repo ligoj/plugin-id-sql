@@ -11,11 +11,13 @@ import org.ligoj.app.iam.IamConfiguration;
 import org.ligoj.app.iam.IamProvider;
 import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
 
 /**
  * SQL IAM provider.
  */
+@Order(50)
 public class SqlIamProvider implements IamProvider {
 
 	@Autowired

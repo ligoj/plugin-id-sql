@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.cache.annotation.CacheKey;
-import javax.cache.annotation.CacheResult;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import javax.ws.rs.Consumes;
@@ -210,8 +208,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 			final String pkey) {
 		// Check the creation mode
 		if (StringUtils.isBlank(parentGroup)) {
-			// Parent as not been defined, so will be the specified OU. that
-			// would be created if it does not exist
+			// Parent as not been defined, so will be the specified OU that would be created as needed
 			return validateAndCreateParentOu(group, ou, pkey);
 		}
 
@@ -236,7 +233,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 		final GroupOrg parentGroupSql = groupResource.findById(parentGroup);
 		if (parentGroupSql == null) {
 			// The parent group does not exists
-			throw new ValidationJsonException(IdentityResource.PARAMETER_PARENT_GROUP, BusinessException.KEY_UNKNOW_ID,
+			throw new ValidationJsonException(IdentityResource.PARAMETER_PARENT_GROUP, BusinessException.KEY_UNKNOWN_ID,
 					parentGroup);
 		}
 
@@ -277,7 +274,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 
 		// Check the group exists
 		if (groupSql == null) {
-			throw new ValidationJsonException(IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOW_ID, group);
+			throw new ValidationJsonException(IdentityResource.PARAMETER_GROUP, BusinessException.KEY_UNKNOWN_ID, group);
 		}
 
 		// Check the group has type TYPE_PROJECT
@@ -371,11 +368,6 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 		final SubscriptionStatusWithData result = new SubscriptionStatusWithData(true);
 		result.put("members", group.getMembers().size());
 		return result;
-	}
-
-	@CacheResult(cacheName = "id-sql-configuration")
-	public boolean ensureCachedConfiguration(@CacheKey final String node) {
-		return super.ensureCachedConfiguration(node);
 	}
 
 	/**
