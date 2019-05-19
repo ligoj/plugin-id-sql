@@ -97,8 +97,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 	/**
 	 * Build the {@link LdapName} instance from the DN. This also requires a valid DN.
 	 *
-	 * @param dn
-	 *            The DN to parse.
+	 * @param dn The DN to parse.
 	 * @return The {@link LdapName} instance.
 	 */
 	protected LdapName newLdapName(final String dn) {
@@ -145,9 +144,8 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 		 * Remove from this company, all companies within (sub SQL DN) this company. This operation is needed since we
 		 * are not rebuilding the cache from the SQL. This save a lot of computations.
 		 */
-		findAll().values().stream().filter(g -> {
-			return DnUtils.equalsOrParentOf(container.getDn(), g.getDn());
-		}).collect(Collectors.toList()).stream().forEach(repository::delete);
+		findAll().values().stream().filter(g -> DnUtils.equalsOrParentOf(container.getDn(), g.getDn()))
+				.collect(Collectors.toList()).stream().forEach(repository::delete);
 	}
 
 }
