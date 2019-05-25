@@ -49,13 +49,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-public class CompanySqlRepositoryTest extends AbstractJpaTest {
+class CompanySqlRepositoryTest extends AbstractJpaTest {
 
 	@Autowired
 	private CompanySqlRepository repository;
 
 	@BeforeEach
-	public void init2() throws IOException {
+	void init2() throws IOException {
 		persistEntities("csv",
 				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
@@ -65,7 +65,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void create() {
+	void create() {
 		final CompanyOrg org = createInternal();
 		Assertions.assertEquals("other", org.getId());
 		Assertions.assertEquals("ou=other,ou=external,ou=people,dc=sample,dc=com", org.getDescription());
@@ -76,7 +76,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void delete() {
+	void delete() {
 		Assertions.assertEquals(9, repository.findAll().size());
 		Assertions.assertEquals(9, repository.findAllNoCache().size());
 		final CompanyOrg createInternal = createInternal();
@@ -98,12 +98,12 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void newSqlName() {
+	void newSqlName() {
 		Assertions.assertThrows(TechnicalException.class, () -> repository.newLdapName("-invalid-"));
 	}
 
 	@Test
-	public void findAll() {
+	void findAll() {
 		final CompanyOrg createInternal = createInternal();
 		final Set<CompanyOrg> containers = new HashSet<>();
 		containers.add(createInternal);
@@ -114,7 +114,7 @@ public class CompanySqlRepositoryTest extends AbstractJpaTest {
 	}
 
 	@Test
-	public void findAllNoMatch() {
+	void findAllNoMatch() {
 		final CompanyOrg createInternal = createInternal();
 		final Set<CompanyOrg> containers = new HashSet<>();
 		containers.add(createInternal);

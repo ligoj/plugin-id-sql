@@ -15,7 +15,7 @@ import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
  */
 public class SqlPluginResourceZDeleteTest extends AbstractSqlPluginResourceTest {
 	@Test
-	public void zzdeleteWithSubGroup() {
+	void zzdeleteWithSubGroup() {
 		// Create the data
 		initSpringSecurityContext("fdaugan");
 

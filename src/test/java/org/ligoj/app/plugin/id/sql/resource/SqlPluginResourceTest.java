@@ -34,10 +34,10 @@ import org.springframework.security.core.Authentication;
 /**
  * Test class of {@link SqlPluginResource}
  */
-public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
+class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
-	public void deleteNoMoreGroup() {
+	void deleteNoMoreGroup() {
 		final Subscription subscription = new Subscription();
 		subscription.setProject(projectRepository.findByName("gStack"));
 		subscription.setNode(nodeRepository.findOneExpected("service:id:sql:local"));
@@ -61,7 +61,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * The unsubscription without deletion has no effect
 	 */
 	@Test
-	public void delete() {
+	void delete() {
 		initSpringSecurityContext("fdaugan");
 		final Map<String, String> parameters = subscriptionResource.getParameters(subscription);
 		Assertions.assertTrue(resource.checkSubscriptionStatus(parameters).getStatus().isUp());
@@ -72,19 +72,19 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void getVersion() {
+	void getVersion() {
 		final String version = resource.getVersion(null);
 		Assertions.assertEquals("1", version);
 	}
 
 	@Test
-	public void getLastVersion() {
+	void getLastVersion() {
 		final String lastVersion = resource.getLastVersion();
 		Assertions.assertEquals("1", lastVersion);
 	}
 
 	@Test
-	public void validateGroupNotExists() {
+	void validateGroupNotExists() {
 		final Map<String, String> parameters = pvResource.getNodeParameters("service:id:sql:local");
 		parameters.put(IdentityResource.PARAMETER_GROUP, "broken");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
@@ -93,7 +93,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void validateGroupNotProject() {
+	void validateGroupNotProject() {
 		final Map<String, String> parameters = pvResource.getNodeParameters("service:id:sql:local");
 		parameters.put(IdentityResource.PARAMETER_GROUP, "vigireport");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
@@ -102,7 +102,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void validateGroup() {
+	void validateGroup() {
 		final Map<String, String> parameters = pvResource.getNodeParameters("service:id:sql:local");
 		parameters.put(IdentityResource.PARAMETER_GROUP, "ligoj-gstack");
 
@@ -116,7 +116,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group in a existing OU. Most Simple case. Group matches exactly to the pkey of the project.
 	 */
 	@Test
-	public void create() {
+	void create() {
 		resource.delete(create("sea-new-project").getId(), true);
 	}
 
@@ -124,7 +124,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group with the same name.
 	 */
 	@Test
-	public void createAlreadyExist() {
+	void createAlreadyExist() {
 		// Attach the new group
 		final Subscription subscription = em.find(Subscription.class, this.subscription);
 		final Subscription subscription2 = new Subscription();
@@ -145,7 +145,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group inside an existing group. Parent group matches exactly to the pkey of the project.
 	 */
 	@Test
-	public void createSubGroup() {
+	void createSubGroup() {
 		// Create the parent group
 		final Project newProject = create("sea-parent").getProject();
 		createSubGroup(newProject, "sea-parent", "sea-parent-client");
@@ -155,7 +155,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group inside an existing group without reusing the name of the parent group.
 	 */
 	@Test
-	public void createNotCompliantGroupForParent() {
+	void createNotCompliantGroupForParent() {
 		// Create the parent group
 		final Project newProject = create("sea-parent2").getProject();
 		createSubGroup(newProject, "sea-parent2", "sea-parent2-client");
@@ -169,7 +169,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group for an existing project, but without reusing the pkey of this project.
 	 */
 	@Test
-	public void createNotCompliantGroupForProject() {
+	void createNotCompliantGroupForProject() {
 		// Preconditions
 		Assertions.assertNotNull(getGroup().findById("sea-octopus"));
 		Assertions.assertNull(getGroup().findById("sea-octopusZZ"));
@@ -195,7 +195,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group for an existing project, reusing the pkey of this project and without suffix.
 	 */
 	@Test
-	public void createNotCompliantGroupForProject2() {
+	void createNotCompliantGroupForProject2() {
 
 		// Preconditions
 		Assertions.assertNotNull(getGroup().findById("sea-octopus"));
@@ -222,7 +222,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group for an existing project, perfect match with the pkey, but without reusing the OU of this project.
 	 */
 	@Test
-	public void createNotCompliantGroupForOu() {
+	void createNotCompliantGroupForOu() {
 		// Preconditions
 		Assertions.assertNull(getGroup().findById("sea-invalid-ou"));
 
@@ -247,7 +247,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group inside an existing group without reusing the name of the parent.
 	 */
 	@Test
-	public void createNotExistingParentGroup() {
+	void createNotExistingParentGroup() {
 		// Preconditions
 		Assertions.assertNotNull(getGroup().findById("sea-octopus"));
 		Assertions.assertNull(getGroup().findById("sea-octopus-client"));
@@ -274,7 +274,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Create a group inside a new organizational unit. Not an error, lazy creation. Exact match for group and pkey.
 	 */
 	@Test
-	public void createOuNotExists() {
+	void createOuNotExists() {
 
 		// Preconditions
 		Assertions.assertNull(getGroup().findById("some-new-project"));
@@ -303,7 +303,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void link() {
+	void link() {
 
 		// Attach the new group
 		final Subscription subscription = em.find(Subscription.class, this.subscription);
@@ -346,7 +346,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void linkNotVisibleProject() {
+	void linkNotVisibleProject() {
 
 		// Invoke link for an already created entity, since for now
 		initSpringSecurityContext("any");
@@ -359,7 +359,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Visible project, but not visible target group
 	 */
 	@Test
-	public void linkNotVisibleGroup() {
+	void linkNotVisibleGroup() {
 		// Attach the wrong group
 		final Subscription subscription = em.find(Subscription.class, this.subscription);
 		setGroup(subscription, "sea-octopus");
@@ -375,7 +375,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	 * Visible project, but target group does not exist
 	 */
 	@Test
-	public void linkNotExistingGroup() {
+	void linkNotExistingGroup() {
 		// Attach the wrong group
 		final Subscription subscription = em.find(Subscription.class, this.subscription);
 		setGroup(subscription, "any-g");
@@ -387,26 +387,26 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void checkStatus() {
+	void checkStatus() {
 		Assertions.assertTrue(
 				resource.checkStatus("service:id:sql:local", subscriptionResource.getParametersNoCheck(subscription)));
 	}
 
 	@Test
-	public void checkSubscriptionStatus() {
+	void checkSubscriptionStatus() {
 		Assertions.assertTrue(resource.checkSubscriptionStatus(subscriptionResource.getParametersNoCheck(subscription))
 				.getStatus().isUp());
 	}
 
 	@Test
-	public void findGroupsByNameNoRight() {
+	void findGroupsByNameNoRight() {
 		initSpringSecurityContext("any");
 		final List<INamableBean<String>> jobs = resource.findGroupsByName("StAck");
 		Assertions.assertEquals(0, jobs.size());
 	}
 
 	@Test
-	public void findGroupsByName() {
+	void findGroupsByName() {
 		final List<INamableBean<String>> jobs = resource.findGroupsByName("StAck");
 		Assertions.assertTrue(jobs.size() >= 1);
 		Assertions.assertEquals("ligoj-gStack", jobs.get(0).getName());
@@ -414,7 +414,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findGroupsByNameNoScope() {
+	void findGroupsByNameNoScope() {
 		final List<INamableBean<String>> jobs = resource.findGroupsByName("StAck");
 		Assertions.assertTrue(jobs.size() >= 1);
 		Assertions.assertEquals("ligoj-gStack", jobs.get(0).getName());
@@ -422,12 +422,12 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void acceptNoParameters() {
+	void acceptNoParameters() {
 		Assertions.assertFalse(resource.accept(null, "service:any"));
 	}
 
 	@Test
-	public void acceptNotMatch() {
+	void acceptNotMatch() {
 		final Node sql = new Node();
 		sql.setId("service:id:sql:test");
 		sql.setRefined(nodeRepository.findOneExpected("service:id:sql"));
@@ -443,7 +443,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void accept() {
+	void accept() {
 		final Node sql = new Node();
 		sql.setId("service:id:sql:test");
 		sql.setRefined(nodeRepository.findOneExpected("service:id:sql"));
@@ -455,13 +455,13 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void authenticatePrimary() {
+	void authenticatePrimary() {
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("jdoe4", "Azerty01");
 		Assertions.assertSame(authentication, resource.authenticate(authentication, "service:id:sql:local", true));
 	}
 
 	@Test
-	public void authenticateFail() {
+	void authenticateFail() {
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("jdoe4", "any");
 		Assertions.assertThrows(BadCredentialsException.class, () -> {
 			resource.authenticate(authentication, "service:id:sql:local", true);
@@ -469,7 +469,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void authenticateSecondaryMock() {
+	void authenticateSecondaryMock() {
 		// Create a new SQL node plugged to the primary node
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("mmartin", "complexOne");
 		final Authentication localAuthentication = resource.authenticate(authentication, "service:id:sql:secondary",
@@ -478,7 +478,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toApplicationUserExists() {
+	void toApplicationUserExists() {
 		// Create a new LDAP node plugged to the primary node
 		final UserOrg user = new UserOrg();
 		user.setMails(Collections.singletonList("marc.martin@sample.com"));
@@ -498,7 +498,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toApplicationUserNew() {
+	void toApplicationUserNew() {
 		// Create a new LDAP node plugged to the primary node
 		final UserOrg user = new UserOrg();
 		user.setMails(Collections.singletonList("some@where.com"));
@@ -518,7 +518,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toApplicationUserNewWithCollision() {
+	void toApplicationUserNewWithCollision() {
 		// Create a new LDAP node plugged to the primary node
 		final UserOrg user = new UserOrg();
 		user.setMails(Collections.singletonList("some@where.com"));
@@ -538,7 +538,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toApplicationUserTooManyMail() {
+	void toApplicationUserTooManyMail() {
 		// Create a new LDAP node pluged to the primary node
 		final UserOrg user = new UserOrg();
 		user.setMails(Collections.singletonList("fabrice.daugan@sample.com"));
@@ -551,7 +551,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toLogin() {
+	void toLogin() {
 		final UserOrg user = new UserOrg();
 		user.setFirstName("First");
 		user.setLastName("Last123");
@@ -559,7 +559,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toLoginNoFirstName() {
+	void toLoginNoFirstName() {
 		final UserOrg user = new UserOrg();
 		user.setLastName("Last123");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
@@ -568,7 +568,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void toLoginNoLastName() {
+	void toLoginNoLastName() {
 		final UserOrg user = new UserOrg();
 		user.setFirstName("First");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
@@ -577,7 +577,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void authenticateSecondaryNoMail() {
+	void authenticateSecondaryNoMail() {
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("jdupont", "Azerty01");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> {
 			resource.authenticate(authentication, "service:id:sql:secondary", false);
@@ -585,7 +585,7 @@ public class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void authenticateSecondaryFail() {
+	void authenticateSecondaryFail() {
 		final Authentication authentication = new UsernamePasswordAuthenticationToken("jdoe4", "any");
 		Assertions.assertThrows(BadCredentialsException.class, () -> {
 			resource.authenticate(authentication, "service:id:sql:secondary", false);

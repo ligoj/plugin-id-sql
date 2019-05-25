@@ -28,10 +28,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(locations = "classpath:/META-INF/spring/application-context-test.xml")
 @Rollback
 @Transactional
-public class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
+class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
-	public void addUser() {
+	void addUser() {
 		final Set<String> users = new HashSet<>();
 		final GroupSqlRepository groupRepository = new GroupSqlRepository() {
 			@Override
@@ -49,7 +49,7 @@ public class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void addUserAlreadyMember() {
+	void addUserAlreadyMember() {
 		final Set<String> users = new HashSet<>();
 		users.add("flast1");
 		final GroupSqlRepository groupRepository = new GroupSqlRepository() {
@@ -68,19 +68,19 @@ public class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void removeUser() {
+	void removeUser() {
 		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		removeUser(groupRepository);
 	}
 
 	@Test
-	public void removeGroup() {
+	void removeGroup() {
 		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		groupRepository.removeGroup(new GroupOrg("any", "any", null), "DIG RHA");
 	}
 
 	@Test
-	public void addGroup() {
+	void addGroup() {
 		final GroupSqlRepository groupRepository = newGroupSqlRepository();
 		groupRepository.addGroup(new GroupOrg("dc=any", "any", null), "DIG RHA");
 	}
@@ -114,12 +114,12 @@ public class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void addAttributes() {
+	void addAttributes() {
 		new GroupSqlRepository().addAttributes(null, null, null);
 	}
 
 	@Test
-	public void empty() {
+	void empty() {
 		GroupSqlRepository repository = new GroupSqlRepository();
 		repository.setRepository(Mockito.mock(CacheSqlRepository.class));
 		repository.empty(null, null);

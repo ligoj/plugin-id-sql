@@ -45,7 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Test of {@link UserOrgResource} Delegate
  */
-public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
+class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Autowired
 	protected UserSqlCredentialRepository credentialRepository;
@@ -59,13 +59,13 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	protected CacheMembershipRepository cacheMembershipRepository;
 
 	@Test
-	public void findById() {
+	void findById() {
 		final UserOrg user = resource.findById("fdaugan");
 		findById(user);
 	}
 
 	@Test
-	public void findByIdNoCache() {
+	void findByIdNoCache() {
 		final UserOrg user = resource.findByIdNoCache("fdaugan");
 		Assertions.assertNotNull(user);
 		Assertions.assertEquals("fdaugan", user.getId());
@@ -76,13 +76,13 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findByIdCaseInsensitive() {
+	void findByIdCaseInsensitive() {
 		final UserOrg user = resource.findById("fdaugan");
 		findById(user);
 	}
 
 	@Test
-	public void findBy() {
+	void findBy() {
 		final List<UserOrg> users = resource.findAllBy("mails", "marc.martin@sample.com");
 		Assertions.assertEquals(1, users.size());
 		final UserOrg user = users.get(0);
@@ -90,14 +90,14 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findByIdNotExists() {
+	void findByIdNotExists() {
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.findById("any");
 		}), "id", "unknown-id");
 	}
 
 	@Test
-	public void findByIdNotManagedUser() {
+	void findByIdNotManagedUser() {
 		initSpringSecurityContext("any");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.findById("fdaugan");
@@ -109,7 +109,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * "iRsT"
 	 */
 	@Test
-	public void findAllAllFiltersAllRights() {
+	void findAllAllFiltersAllRights() {
 
 		final TableItem<UserOrgVo> tableItem = resource.findAll("ing", "dig rha", "iRsT", newUriInfoAsc("id"));
 		Assertions.assertEquals(2, tableItem.getRecordsTotal());
@@ -133,7 +133,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllAllFiltersReducesGroupsAscLogin() {
+	void findAllAllFiltersReducesGroupsAscLogin() {
 		initSpringSecurityContext("fdaugan");
 		final TableItem<UserOrgVo> tableItem = resource.findAll("ing", "dig rha", "iRsT", newUriInfoAsc("id"));
 		Assertions.assertEquals(2, tableItem.getRecordsTotal());
@@ -155,7 +155,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllNotSecure() {
+	void findAllNotSecure() {
 		initSpringSecurityContext("fdaugan");
 		final List<UserOrg> tableItem = resource.findAllNotSecure("ing", "dig rha");
 		Assertions.assertEquals(4, tableItem.size());
@@ -176,7 +176,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllDefaultDescFirstName() {
+	void findAllDefaultDescFirstName() {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "5");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORTED_COLUMN, "2");
@@ -204,7 +204,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllDefaultDescMail() {
+	void findAllDefaultDescMail() {
 		final UriInfo uriInfo = newUriInfo();
 		uriInfo.getQueryParameters().add(DataTableAttributes.PAGE_LENGTH, "5");
 		uriInfo.getQueryParameters().add(DataTableAttributes.SORTED_COLUMN, "2");
@@ -226,7 +226,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * One delegation to members of group "ligoj-gstack" to see the company "ing"
 	 */
 	@Test
-	public void findAllUsingDelegateReceiverGroup() {
+	void findAllUsingDelegateReceiverGroup() {
 		initSpringSecurityContext("alongchu");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
 
@@ -248,7 +248,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * No delegation for any group, but only for a company. So see only users within these company : ing(5) + socygan(1)
 	 */
 	@Test
-	public void findAllForMyCompany() {
+	void findAllForMyCompany() {
 		initSpringSecurityContext("assist");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
 		Assertions.assertEquals(9, tableItem.getRecordsTotal());
@@ -267,7 +267,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * No delegation for any group, but only for a company. So see only users within this company : ing(5)
 	 */
 	@Test
-	public void findAllForMyCompanyFilter() {
+	void findAllForMyCompanyFilter() {
 		initSpringSecurityContext("assist");
 
 		final TableItem<UserOrgVo> tableItem = resource.findAll("ing", null, null, newUriInfoAsc("id"));
@@ -288,7 +288,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * this user can manage. <br>
 	 */
 	@Test
-	public void findAllForMyGroup() {
+	void findAllForMyGroup() {
 		initSpringSecurityContext("mmartin");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, "dig as", null, newUriInfoAsc("id"));
 
@@ -308,7 +308,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * company this user can manage. <br>
 	 */
 	@Test
-	public void findAllForMySubGroup() {
+	void findAllForMySubGroup() {
 		initSpringSecurityContext("mmartin");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, "biz agency", "fdoe2", newUriInfoAsc("id"));
 		Assertions.assertEquals(1, tableItem.getRecordsTotal());
@@ -330,7 +330,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllFullAscCompany() {
+	void findAllFullAscCompany() {
 		initSpringSecurityContext("fdaugan");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("company"));
 
@@ -344,7 +344,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllFullDescCompany() {
+	void findAllFullDescCompany() {
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoDesc("company"));
 		Assertions.assertEquals(16, tableItem.getRecordsTotal());
 		Assertions.assertEquals(16, tableItem.getRecordsFiltered());
@@ -358,7 +358,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllFullAscLastName() {
+	void findAllFullAscLastName() {
 		initSpringSecurityContext("fdaugan");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("lastName"));
 
@@ -372,7 +372,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void findAllMemberDifferentCase() {
+	void findAllMemberDifferentCase() {
 		final TableItem<UserOrgVo> tableItem = resource.findAll("LigoJ", "ProductioN", "mmarTIN",
 				newUriInfoAsc("lastName"));
 		Assertions.assertEquals(1, tableItem.getRecordsTotal());
@@ -387,7 +387,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * No available delegate for the current user -> 0
 	 */
 	@Test
-	public void findAllNoRight() {
+	void findAllNoRight() {
 		initSpringSecurityContext("any");
 
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
@@ -401,7 +401,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * this user can manage. <br>
 	 */
 	@Test
-	public void findAllNoWrite() {
+	void findAllNoWrite() {
 		initSpringSecurityContext("mlavoine");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, "fdoe2", newUriInfoAsc("id"));
 		Assertions.assertEquals(1, tableItem.getRecordsTotal());
@@ -422,14 +422,14 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Add filter by group, but this group does not exist/not visible. No match.
 	 */
 	@Test
-	public void findAllFilteredNonExistingGroup() {
+	void findAllFilteredNonExistingGroup() {
 		initSpringSecurityContext("fdaugan");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, "any", null, newUriInfoAsc("id"));
 		Assertions.assertEquals(0, tableItem.getRecordsTotal());
 	}
 
 	@Test
-	public void createUserAlreadyExists() {
+	void createUserAlreadyExists() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast1");
 		user.setFirstName("FirstA");
@@ -446,7 +446,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void deleteUserNoDelegateCompany() {
+	void deleteUserNoDelegateCompany() {
 		initSpringSecurityContext("mmartin");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.delete("flast1");
@@ -454,14 +454,14 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void deleteLastMember() {
+	void deleteLastMember() {
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.delete("mmartin");
 		}), "id", "last-member-of-group");
 	}
 
 	@Test
-	public void deleteUserNoDelegateWriteCompany() {
+	void deleteUserNoDelegateWriteCompany() {
 		initSpringSecurityContext("mtuyer");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.delete("flast1");
@@ -469,7 +469,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void mergeUserNoChange() {
+	void mergeUserNoChange() {
 		final UserOrg user2 = getUser().findById("flast1");
 		Assertions.assertNull(user2.getDepartment());
 		Assertions.assertNull(user2.getLocalId());
@@ -480,7 +480,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void mergeUser() {
+	void mergeUser() {
 		final UserOrg user2 = getUser().findById("flast1");
 		Assertions.assertNull(user2.getDepartment());
 		Assertions.assertNull(user2.getLocalId());
@@ -502,7 +502,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Update everything : attributes and mails
 	 */
 	@Test
-	public void update() {
+	void update() {
 		final UserOrgEditionVo userEdit = new UserOrgEditionVo();
 		userEdit.setId("flast1");
 		userEdit.setFirstName("FirstA");
@@ -539,7 +539,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateFirstName() {
+	void updateFirstName() {
 		// First name change only
 		final UserOrgEditionVo userEdit = new UserOrgEditionVo();
 		userEdit.setId("jlast3");
@@ -566,7 +566,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateLastName() {
+	void updateLastName() {
 		// Last name change only
 		final UserOrgEditionVo userEdit = new UserOrgEditionVo();
 		userEdit.setId("jlast3");
@@ -592,7 +592,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateMail() {
+	void updateMail() {
 		// Mail change only
 		final UserOrgEditionVo userEdit = new UserOrgEditionVo();
 		userEdit.setId("jlast3");
@@ -618,7 +618,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserChangeCompanyAndBackAgain() {
+	void updateUserChangeCompanyAndBackAgain() {
 		Assertions.assertEquals("uid=flast0,ou=socygan,ou=external,ou=people,dc=sample,dc=com",
 				toDn(getContext("flast0")));
 
@@ -653,7 +653,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserCompanyNotExists() {
+	void updateUserCompanyNotExists() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("FirstA");
@@ -669,7 +669,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserGroupNotExists() {
+	void updateUserGroupNotExists() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast1");
 		user.setFirstName("FirstA");
@@ -686,7 +686,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoChange() {
+	void updateUserNoChange() {
 		final UserOrgEditionVo userEdit = new UserOrgEditionVo();
 		userEdit.setId("jlast3");
 		userEdit.setFirstName("John3");
@@ -714,7 +714,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegate() {
+	void updateUserNoDelegate() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast1");
 		user.setFirstName("FirstW");
@@ -731,7 +731,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateNotVisibleTargetCompany() {
+	void updateNotVisibleTargetCompany() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("First0");
@@ -748,7 +748,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegateCompany() {
+	void updateUserNoDelegateCompany() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("FirstA");
@@ -764,7 +764,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegateCompanyChangeFirstName() {
+	void updateUserNoDelegateCompanyChangeFirstName() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("FirstA");
@@ -778,7 +778,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegateCompanyChangeMail() {
+	void updateUserNoDelegateCompanyChangeMail() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("First0");
@@ -792,7 +792,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegateCompanyNoChange() {
+	void updateUserNoDelegateCompanyNoChange() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast0");
 		user.setFirstName("First0");
@@ -804,7 +804,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNoDelegateGroupForTarget() {
+	void updateUserNoDelegateGroupForTarget() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast1");
 		user.setFirstName("FirstA");
@@ -821,7 +821,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateUserNotExists() {
+	void updateUserNotExists() {
 		final UserOrgEditionVo user = new UserOrgEditionVo();
 		user.setId("flast11");
 		user.setFirstName("FirstA");
@@ -840,7 +840,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Add a group to user having already some groups but not visible from the current user.
 	 */
 	@Test
-	public void updateUserAddGroup() {
+	void updateUserAddGroup() {
 		// Pre condition, check the user "wuser", has not yet the group "DIG
 		// RHA" we want to be added by "fdaugan"
 		initSpringSecurityContext("fdaugan");
@@ -927,7 +927,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Test user addition to a group this user is already member.
 	 */
 	@Test
-	public void addUserToGroup() {
+	void addUserToGroup() {
 		// Pre condition
 		Assertions.assertTrue(resource.findById("wuser").getGroups().contains("Biz Agency Manager"));
 
@@ -938,7 +938,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void deleteUserNoWriteRight() {
+	void deleteUserNoWriteRight() {
 		initSpringSecurityContext("mmartin");
 		Assertions.assertEquals(1, resource.findAll(null, null, "wuser", newUriInfo()).getData().size());
 		Assertions.assertNotNull(getUser().findByIdNoCache("wuser"));
@@ -949,7 +949,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void deleteUserNotExists() {
+	void deleteUserNotExists() {
 		initSpringSecurityContext("assist");
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
 			resource.delete("any");
@@ -957,7 +957,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void updateMembership() {
+	void updateMembership() {
 		final UserSqlRepository repository = new UserSqlRepository();
 		repository.setGroupRepository(Mockito.mock(GroupSqlRepository.class));
 		final List<String> groups = new ArrayList<>();
@@ -971,7 +971,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void convertUserRaw() {
+	void convertUserRaw() {
 		final UserOrg user = getUser().toUser("jdoe5");
 		checkRawUser(user);
 		Assertions.assertNotNull(user.getGroups());
@@ -979,7 +979,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	@Test
-	public void convertUserNotExist() {
+	void convertUserNotExist() {
 		final UserOrg user = getUser().toUser("any");
 		Assertions.assertNotNull(user);
 		Assertions.assertEquals("any", user.getId());
@@ -994,7 +994,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Check a user can see all users from the same company
 	 */
 	@Test
-	public void findAllMyCompany() {
+	void findAllMyCompany() {
 		initSpringSecurityContext("mmartin");
 
 		final TableItem<UserOrgVo> tableItem = resource.findAll("ligoj", null, null, newUriInfoAsc("id"));
@@ -1011,14 +1011,14 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * When the requested company does not exists, return an empty set.
 	 */
 	@Test
-	public void findAllUnknowFilteredCompany() {
+	void findAllUnknowFilteredCompany() {
 		final TableItem<UserOrgVo> tableItem = resource.findAll("any", null, null, newUriInfoAsc("id"));
 		Assertions.assertEquals(0, tableItem.getRecordsTotal());
 		Assertions.assertEquals(0, tableItem.getRecordsFiltered());
 	}
 
 	@Test
-	public void setIamProviderForTest() {
+	void setIamProviderForTest() {
 		// There for test by other plugin/application
 		new UserOrgResource().setIamProvider(new IamProvider[] { Mockito.mock(IamProvider.class) });
 	}
@@ -1028,7 +1028,7 @@ public class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Override
 	@BeforeEach
-	public void prepareData() throws IOException {
+	protected void prepareData() throws IOException {
 		super.prepareData();
 		persistEntities("csv", new Class[] { DelegateOrg.class }, StandardCharsets.UTF_8.name());
 

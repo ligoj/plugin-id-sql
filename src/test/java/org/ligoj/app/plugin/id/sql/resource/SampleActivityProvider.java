@@ -10,6 +10,9 @@ import org.ligoj.app.api.ServicePlugin;
 import org.ligoj.app.iam.Activity;
 import org.ligoj.app.resource.ActivitiesProvider;
 
+/**
+ * Test provider
+ */
 public class SampleActivityProvider implements ActivitiesProvider, ServicePlugin {
 
 	@Override

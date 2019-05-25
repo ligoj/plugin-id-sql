@@ -40,6 +40,10 @@ public class SqlIamProvider implements IamProvider {
 		return Optional.ofNullable(iamConfiguration).orElseGet(this::refreshConfiguration);
 	}
 
+	/**
+	 * Refresh the configuration.
+	 * @return Ignored.
+	 */
 	@CacheResult(cacheName = "iam-sql-configuration")
 	public boolean ensureCachedConfiguration() {
 		refreshConfiguration();

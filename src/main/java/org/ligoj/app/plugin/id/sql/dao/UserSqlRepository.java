@@ -515,7 +515,7 @@ public class UserSqlRepository implements IUserRepository {
 	 *                   password!
 	 * @param keyLength  Key length. 256 is safe.
 	 * @return
-	 * @see <a href="https://www.owasp.org/index.php/Hashing_Java">www.owasp.org<a>
+	 * @see <a href="https://www.owasp.org/index.php/Hashing_Java">www.owasp.org</a>
 	 */
 	private String hashPassword(final char[] password, final byte[] salt, final int iterations, final int keyLength) {
 

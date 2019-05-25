@@ -30,7 +30,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Test class of {@link CacheSqlRepository}
  */
-public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
+class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	private CompanySqlRepository companyRepository;
 	private GroupSqlRepository groupRepository;
 	private UserSqlRepository userRepository;
@@ -46,7 +46,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	private IdCacheDao cache;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		companyRepository = Mockito.mock(CompanySqlRepository.class);
 		groupRepository = Mockito.mock(GroupSqlRepository.class);
 		userRepository = Mockito.mock(UserSqlRepository.class);
@@ -101,7 +101,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void getSqlData() {
+	void getSqlData() {
 
 		// Only there for coverage
 		CacheDataType.values();
@@ -128,7 +128,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void addUserToGroup() {
+	void addUserToGroup() {
 		Assertions.assertEquals(1, user.getGroups().size());
 
 		repository.addUserToGroup(user, groupSql2);
@@ -139,7 +139,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void removeUserFromGroup() {
+	void removeUserFromGroup() {
 		Assertions.assertEquals(1, user.getGroups().size());
 
 		repository.removeUserFromGroup(user, groupSql);
@@ -149,7 +149,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void addGroupToGroup() {
+	void addGroupToGroup() {
 		final GroupOrg parent = groupSql2;
 		final GroupOrg child = groupSql;
 
@@ -171,7 +171,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void removeGroupFromGroup() {
+	void removeGroupFromGroup() {
 		final GroupOrg parent = groupSql2;
 		final GroupOrg child = groupSql;
 		parent.getSubGroups().add(child.getId());
@@ -193,7 +193,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void createGroup() {
+	void createGroup() {
 		final GroupOrg newGroupSql = new GroupOrg("dn3", "G3", new HashSet<>());
 
 		repository.create(newGroupSql);
@@ -203,7 +203,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void createCompany() {
+	void createCompany() {
 		final CompanyOrg newCompanySql = new CompanyOrg("dn3", "C3");
 
 		repository.create(newCompanySql);
@@ -213,7 +213,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void createUser() {
+	void createUser() {
 		final UserOrg newUser = new UserOrg();
 		newUser.setId("u3");
 		newUser.setFirstName("f");
@@ -228,7 +228,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void updateUser() {
+	void updateUser() {
 		user.setFirstName("L");
 
 		repository.update(user);
@@ -238,7 +238,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void deleteGroup() {
+	void deleteGroup() {
 		Assertions.assertTrue(groups.containsKey("group"));
 		Assertions.assertTrue(user.getGroups().contains("group"));
 
@@ -249,7 +249,7 @@ public class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	}
 
 	@Test
-	public void deleteUser() {
+	void deleteUser() {
 		Assertions.assertEquals(1, user.getGroups().size());
 		Assertions.assertTrue(users.containsKey("u"));
 

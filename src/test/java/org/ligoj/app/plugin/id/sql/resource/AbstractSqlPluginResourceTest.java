@@ -89,7 +89,7 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 	protected int subscription;
 
 	@BeforeEach
-	public void prepareData() throws IOException {
+	protected void prepareData() throws IOException {
 		persistEntities("csv",
 				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
@@ -108,6 +108,8 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 
 	/**
 	 * Create a group in a existing OU "sea". Most Simple case. Group matches exactly to the pkey of the project.
+	 * 
+	 * @param groupAndProject The group identifier.
 	 *
 	 * @return the created subscription.
 	 */
@@ -152,6 +154,9 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 
 	/**
 	 * Create a new project
+	 * 
+	 * @param pkey The project key.
+	 * @return The resolved project.
 	 */
 	protected Project newProject(final String pkey) {
 		final Project project = new Project();
@@ -209,6 +214,10 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 
 	/**
 	 * Create a group inside another group/ Both are created inside "sea" OU.
+	 * 
+	 * @param newProject  The source project.
+	 * @param parentGroup The related parent group.
+	 * @param subGroup    The sub group.
 	 *
 	 * @return the created {@link Subscription}.
 	 */
