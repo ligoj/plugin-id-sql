@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -115,7 +114,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 		// Collect all parents and sorted from parent to the leaf
 		company.setCompanyTree(
 				companies.values().stream().filter(c -> DnUtils.equalsOrParentOf(c.getDn(), company.getDn()))
-						.sorted(Comparator.comparing(CompanyOrg::getLdapName)).collect(Collectors.toList()));
+						.sorted(Comparator.comparing(CompanyOrg::getLdapName)).toList());
 	}
 
 	/**
@@ -144,8 +143,8 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 		 * Remove from this company, all companies within (sub SQL DN) this company. This operation is needed since we
 		 * are not rebuilding the cache from the SQL. This save a lot of computations.
 		 */
-		findAll().values().stream().filter(g -> DnUtils.equalsOrParentOf(container.getDn(), g.getDn()))
-				.collect(Collectors.toList()).stream().forEach(repository::delete);
+		findAll().values().stream().filter(g -> DnUtils.equalsOrParentOf(container.getDn(), g.getDn())).toList()
+				.forEach(repository::delete);
 	}
 
 }

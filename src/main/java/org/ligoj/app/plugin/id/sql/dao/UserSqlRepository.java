@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -163,7 +162,7 @@ public class UserSqlRepository implements IUserRepository {
 
 	@Override
 	public List<UserOrg> findAllBy(final String attribute, final String value) {
-		return cacheUserRepository.findAllBy(attribute, value).stream().map(this::toUser).collect(Collectors.toList());
+		return cacheUserRepository.findAllBy(attribute, value).stream().map(this::toUser).toList();
 	}
 
 	@Override
@@ -182,12 +181,11 @@ public class UserSqlRepository implements IUserRepository {
 	public Map<String, UserOrg> findAllNoCache(final Map<String, GroupOrg> groups) {
 
 		// Fetch users and their direct attributes
-		final List<UserOrg> users = cacheUserRepository.findAll().stream().map(this::toUser)
-				.collect(Collectors.toList());
+		final var users = cacheUserRepository.findAll().stream().map(this::toUser).toList();
 
 		// Index the users by the identifier and update the memberships of this user
 		final Map<String, UserOrg> result = new HashMap<>();
-		for (final UserOrg user : users) {
+		for (final var user : users) {
 			user.setGroups(new ArrayList<>());
 			result.put(user.getId(), user);
 			groups.values().stream().filter(g -> g.getMembers().contains(user.getId()))

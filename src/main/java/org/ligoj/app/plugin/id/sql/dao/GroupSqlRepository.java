@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.IGroupRepository;
@@ -122,8 +121,7 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	 * Delete the given group. There is no synchronized block, so error could occur; this is assumed for performance
 	 * purpose.
 	 *
-	 * @param group
-	 *            the SQL group.
+	 * @param group the SQL group.
 	 */
 	@Override
 	public void delete(final GroupOrg group) {
@@ -132,8 +130,8 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 		 * Remove from this group, all groups within (sub DN) this group. This operation is needed since we are not
 		 * rebuilding the cache from the cache it-self. This save a lot of computations.
 		 */
-		findAll().values().stream().filter(g -> DnUtils.equalsOrParentOf(group.getDn(), g.getDn()))
-				.collect(Collectors.toList()).forEach(this::removeFromJavaCache);
+		findAll().values().stream().filter(g -> DnUtils.equalsOrParentOf(group.getDn(), g.getDn())).toList()
+				.forEach(this::removeFromJavaCache);
 
 		// Also, update the cache
 		repository.delete(group);
@@ -170,10 +168,8 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	/**
 	 * Remove a group from another group. Cache is updated. There is no deletion.
 	 *
-	 * @param subGroup
-	 *            {@link GroupOrg} to remove.
-	 * @param group
-	 *            CN of the group to update.
+	 * @param subGroup {@link GroupOrg} to remove.
+	 * @param group    CN of the group to update.
 	 */
 	public void removeGroup(final GroupOrg subGroup, final String group) {
 		// Remove from Java cache and from SQL cache
