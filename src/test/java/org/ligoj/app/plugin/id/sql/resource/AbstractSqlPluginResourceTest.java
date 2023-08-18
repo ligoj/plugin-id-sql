@@ -3,11 +3,7 @@
  */
 package org.ligoj.app.plugin.id.sql.resource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import javax.transaction.Transactional;
-
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,17 +15,8 @@ import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.ICompanyRepository;
 import org.ligoj.app.iam.IGroupRepository;
 import org.ligoj.app.iam.IUserRepository;
-import org.ligoj.app.iam.model.CacheCompany;
-import org.ligoj.app.iam.model.CacheGroup;
-import org.ligoj.app.iam.model.CacheMembership;
-import org.ligoj.app.iam.model.CacheUser;
-import org.ligoj.app.iam.model.DelegateOrg;
-import org.ligoj.app.model.CacheProjectGroup;
-import org.ligoj.app.model.Node;
-import org.ligoj.app.model.Parameter;
-import org.ligoj.app.model.ParameterValue;
-import org.ligoj.app.model.Project;
-import org.ligoj.app.model.Subscription;
+import org.ligoj.app.iam.model.*;
+import org.ligoj.app.model.*;
 import org.ligoj.app.plugin.id.model.ContainerScope;
 import org.ligoj.app.plugin.id.resource.AbstractPluginIdTest;
 import org.ligoj.app.plugin.id.resource.IdentityResource;
@@ -43,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Test class of {@link SqlPluginResource}
@@ -94,20 +84,20 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
-				StandardCharsets.UTF_8.name());
+				StandardCharsets.UTF_8);
 		cacheManager.getCache("container-scopes").clear();
 		cacheManager.getCache("id-configuration").clear();
 		cacheManager.getCache("id-sql-data").clear();
 
 		// Only with Spring context
-		this.subscription = getSubscription("gStack", IdentityResource.SERVICE_KEY);
+		this.subscription = getSubscription("Jupiter", IdentityResource.SERVICE_KEY);
 
 		// Coverage only
-		resource.getKey();
+		Assertions.assertEquals("service:id:sql",resource.getKey());
 	}
 
 	/**
-	 * Create a group in a existing OU "sea". Most Simple case. Group matches exactly to the pkey of the project.
+	 * Create a group in an existing OU "sea". Most Simple case. Group matches exactly to the pkey of the project.
 	 * 
 	 * @param groupAndProject The group identifier.
 	 *
@@ -217,7 +207,7 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 	 * 
 	 * @param newProject  The source project.
 	 * @param parentGroup The related parent group.
-	 * @param subGroup    The sub group.
+	 * @param subGroup    The subgroup.
 	 *
 	 * @return the created {@link Subscription}.
 	 */

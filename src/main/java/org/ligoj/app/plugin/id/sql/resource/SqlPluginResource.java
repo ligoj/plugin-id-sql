@@ -3,20 +3,12 @@
  */
 package org.ligoj.app.plugin.id.sql.resource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.transaction.Transactional;
-import javax.transaction.Transactional.TxType;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
+import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ligoj.app.api.Normalizer;
 import org.ligoj.app.api.SubscriptionStatusWithData;
@@ -27,24 +19,20 @@ import org.ligoj.app.model.ContainerType;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.plugin.id.dao.CacheProjectGroupRepository;
 import org.ligoj.app.plugin.id.model.ContainerScope;
-import org.ligoj.app.plugin.id.resource.AbstractPluginIdResource;
-import org.ligoj.app.plugin.id.resource.ContainerScopeResource;
-import org.ligoj.app.plugin.id.resource.ContainerWithScopeVo;
-import org.ligoj.app.plugin.id.resource.GroupResource;
-import org.ligoj.app.plugin.id.resource.IdentityResource;
+import org.ligoj.app.plugin.id.resource.*;
 import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
 import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
 import org.ligoj.app.resource.ServicePluginLocator;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
+import org.ligoj.bootstrap.core.SpringUtils;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 /**
  * SQL resource.
@@ -83,8 +71,10 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	 */
 	public static final String PARAMETER_KEY_LENGTH = KEY + ":key-length";
 
+	public static final String DEFAULT_ALG = org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512.name();
+
 	/**
-	 * Key algorithm. such as <code>PBKDF2WithHmacSHA512</code>.
+	 * Key algorithm. such as {@link #DEFAULT_ALG}.
 	 */
 	public static final String PARAMETER_KEY_ALG = KEY + ":key-alg";
 
@@ -122,10 +112,10 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 		repository.setSaltLength(Integer.parseInt(parameters.getOrDefault(PARAMETER_SALT_LENGTH, "64"), 10));
 		repository.setHashIteration(Integer.parseInt(parameters.getOrDefault(PARAMETER_HASH_ITERATION, "10"), 10));
 		repository.setKeyLength(Integer.parseInt(parameters.getOrDefault(PARAMETER_KEY_LENGTH, "256"), 10));
-		repository.setSecretKeyFactory(parameters.getOrDefault(PARAMETER_KEY_ALG, "PBKDF2WithHmacSHA512"));
+		repository.setSecretKeyFactory(parameters.getOrDefault(PARAMETER_KEY_ALG, DEFAULT_ALG));
 
 		// Complete the bean
-		context.getAutowireCapableBeanFactory().autowireBean(repository);
+		SpringUtils.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(repository);
 
 		return repository;
 	}
@@ -134,7 +124,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	public boolean accept(final Authentication authentication, final String node) {
 		final Map<String, String> parameters = pvResource.getNodeParameters(node);
 		return !parameters.isEmpty() && authentication.getName()
-				.matches(StringUtils.defaultString(parameters.get(IdentityResource.PARAMETER_UID_PATTERN), ".*"));
+				.matches(Objects.toString(parameters.get(IdentityResource.PARAMETER_UID_PATTERN), ".*"));
 	}
 
 	@Override
@@ -175,7 +165,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	 * Validate the group against the OU and the linked project.
 	 */
 	private void validateGroup(final String group, final String ou, final String pkey) {
-		// Check the group does not exists
+		// Check the group does not exist
 		if (groupResource.findById(group) != null) {
 			// This group already exists
 			throw new ValidationJsonException(IdentityResource.PARAMETER_GROUP, "already-exist", "0",
@@ -232,14 +222,14 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	private String validateParentGroup(final String group, final String parentGroup) {
 		final GroupOrg parentGroupSql = groupResource.findById(parentGroup);
 		if (parentGroupSql == null) {
-			// The parent group does not exists
+			// The parent group does not exist
 			throw new ValidationJsonException(IdentityResource.PARAMETER_PARENT_GROUP, BusinessException.KEY_UNKNOWN_ID,
 					parentGroup);
 		}
 
 		// Compare the group and its parent
 		if (!group.startsWith(parentGroup + "-")) {
-			// This sub-group has not a correct form
+			// This subgroup has not a correct form
 			throw new ValidationJsonException(IdentityResource.PARAMETER_GROUP, PATTERN_PROPERTY, parentGroup + "-.*");
 		}
 
@@ -364,7 +354,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 			return new SubscriptionStatusWithData(false);
 		}
 
-		// Non empty group, return amount of members
+		// Non-empty group, return amount of members
 		final SubscriptionStatusWithData result = new SubscriptionStatusWithData(true);
 		result.put("members", group.getMembers().size());
 		return result;

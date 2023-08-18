@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
-				StandardCharsets.UTF_8.name());
+				StandardCharsets.UTF_8);
 		repository = new UserSqlRepository();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(repository);
 		cacheManager.getCache("id-sql-data").clear();

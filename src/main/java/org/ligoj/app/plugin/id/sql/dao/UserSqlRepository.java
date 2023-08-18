@@ -6,18 +6,7 @@ package org.ligoj.app.plugin.id.sql.dao;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -44,6 +33,7 @@ import org.ligoj.app.plugin.id.model.LastNameComparator;
 import org.ligoj.app.plugin.id.model.LoginComparator;
 import org.ligoj.app.plugin.id.model.MailComparator;
 import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
+import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
 import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.json.InMemoryPagination;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
@@ -111,12 +101,12 @@ public class UserSqlRepository implements IUserRepository {
 	private int keyLength = 256;
 
 	/**
-	 * If the code generates a NoSuchAlgorithmException, replace PBKDF2WithHmacSHA512 with PBKDF2WithHmacSHA1. Both are
-	 * adequate to the task but you may be criticized when people see "SHA1" in the specification (SHA1 can be unsafe
-	 * outside of the context of PBKDF2).
+	 * If the code generates a NoSuchAlgorithmException, replace {@link org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm#PBKDF2WithHmacSHA512} with {@link org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm#PBKDF2WithHmacSHA1} . Both are
+	 * adequate to the task, but you may be criticized when people see "SHA1" in the specification (SHA1 can be unsafe
+	 * outside the context of PBKDF2).
 	 */
 	@Setter
-	private String secretKeyFactory = "PBKDF2WithHmacSHA512";
+	private String secretKeyFactory = SqlPluginResource.DEFAULT_ALG;
 
 	@Autowired
 	private InMemoryPagination inMemoryPagination;
@@ -174,7 +164,7 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * Return all user entries.
 	 *
-	 * @param groups The existing groups. They will be be used to complete the membership of each returned user.
+	 * @param groups The existing groups. They will be used to complete the membership of each returned user.
 	 * @return all user entries. Key is the user login.
 	 */
 	@Override
@@ -275,7 +265,7 @@ public class UserSqlRepository implements IUserRepository {
 	 */
 	private void addFilteredByCompaniesAndPattern(final Set<String> members, final Set<String> companies,
 			final String criteria, final Set<UserOrg> result, final Map<String, UserOrg> users) {
-		// Filter by company for each members
+		// Filter by company for each member
 		for (final String member : members) {
 			final UserOrg userSql = users.get(member);
 
@@ -394,7 +384,7 @@ public class UserSqlRepository implements IUserRepository {
 	}
 
 	/**
-	 * Lock an user :
+	 * Lock a user :
 	 * <ul>
 	 * <li>Clear the password to prevent new authentication</li>
 	 * <li>Set the disabled flag.</li>
@@ -466,7 +456,7 @@ public class UserSqlRepository implements IUserRepository {
 			value = "0".repeat(16);
 		} else {
 			salt = credential.getSalt();
-			value = StringUtils.defaultString(credential.getValue(), "");
+			value = Objects.toString(credential.getValue(), "");
 		}
 
 		// Compare
@@ -499,7 +489,6 @@ public class UserSqlRepository implements IUserRepository {
 	/**
 	 * The password and salt arguments are arrays, as is the result of the hashPassword function. Sensitive data should
 	 * be cleared after you have used it (set the array elements to zero).
-	 *
 	 * The example uses a Password Based Key Derivation Function 2 (PBKDF2), as discussed in the Password Storage Cheat
 	 * Sheet.
 	 *
@@ -512,7 +501,7 @@ public class UserSqlRepository implements IUserRepository {
 	 *                   beyond the scope of this document. Remember to save the value of iterations with the hashed
 	 *                   password!
 	 * @param keyLength  Key length. 256 is safe.
-	 * @return
+	 * @return Hashed password.
 	 * @see <a href="https://www.owasp.org/index.php/Hashing_Java">www.owasp.org</a>
 	 */
 	private String hashPassword(final char[] password, final byte[] salt, final int iterations, final int keyLength) {

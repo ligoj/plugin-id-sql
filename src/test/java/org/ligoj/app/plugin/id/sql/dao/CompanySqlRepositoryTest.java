@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +60,7 @@ class CompanySqlRepositoryTest extends AbstractJpaTest {
 				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
-				StandardCharsets.UTF_8.name());
+				StandardCharsets.UTF_8);
 		cacheManager.getCache("id-sql-data").clear();
 	}
 

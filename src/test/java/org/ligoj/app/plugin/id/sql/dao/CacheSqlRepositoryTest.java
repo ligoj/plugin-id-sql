@@ -3,40 +3,25 @@
  */
 package org.ligoj.app.plugin.id.sql.dao;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.ligoj.app.iam.CompanyOrg;
-import org.ligoj.app.iam.GroupOrg;
-import org.ligoj.app.iam.IamConfiguration;
-import org.ligoj.app.iam.IamProvider;
-import org.ligoj.app.iam.ResourceOrg;
-import org.ligoj.app.iam.UserOrg;
+import org.ligoj.app.iam.*;
 import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
 import org.ligoj.app.plugin.id.dao.IdCacheDao;
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
+import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.SpringUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
+
+import java.util.*;
 
 /**
  * Test class of {@link CacheSqlRepository}
  */
 class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
-	private CompanySqlRepository companyRepository;
-	private GroupSqlRepository groupRepository;
-	private UserSqlRepository userRepository;
-	private IamProvider iamProvider;
 	private UserOrg user;
-	private UserOrg user2;
 	private GroupOrg groupSql;
 	private GroupOrg groupSql2;
 	private Map<String, GroupOrg> groups;
@@ -47,10 +32,10 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@BeforeEach
 	void init() {
-		companyRepository = Mockito.mock(CompanySqlRepository.class);
-		groupRepository = Mockito.mock(GroupSqlRepository.class);
-		userRepository = Mockito.mock(UserSqlRepository.class);
-		iamProvider = Mockito.mock(IamProvider.class);
+		CompanySqlRepository companyRepository = Mockito.mock(CompanySqlRepository.class);
+		GroupSqlRepository groupRepository = Mockito.mock(GroupSqlRepository.class);
+		UserSqlRepository userRepository = Mockito.mock(UserSqlRepository.class);
+		IamProvider iamProvider = Mockito.mock(IamProvider.class);
 		final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
 		SpringUtils.setSharedApplicationContext(applicationContext);
 		final IamConfiguration iamConfiguration = new IamConfiguration();
@@ -77,7 +62,7 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 		userGroups.add("group");
 		user.setGroups(userGroups);
 		user.setMails(Collections.singletonList("mail"));
-		user2 = new UserOrg();
+		UserOrg user2 = new UserOrg();
 		user2.setId("u2");
 		user2.setFirstName("f");
 		user2.setLastName("l");
@@ -94,7 +79,7 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 		Mockito.when(userRepository.findAll()).thenReturn(users);
 
 		repository = new CacheSqlRepository();
-		repository.setIamProvider( new IamProvider[] { iamProvider });
+		repository.setIamProvider( new IamProvider[] {iamProvider});
 		cache = Mockito.mock(IdCacheDao.class);
 		repository.setCache(cache);
 		repository.self = repository;
@@ -104,13 +89,13 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 	void getSqlData() {
 
 		// Only there for coverage
-		CacheDataType.values();
-		CacheDataType.valueOf(CacheDataType.COMPANY.name());
 
-		final Map<CacheDataType, Map<String, ? extends ResourceOrg>> sqlData = repository.getData();
+		Assertions.assertEquals("COMPANY",CacheDataType.values()[CacheDataType.valueOf(CacheDataType.COMPANY.name()).ordinal()].name());
 
-		Assertions.assertEquals("Company", ((CompanyOrg) sqlData.get(CacheDataType.COMPANY).get("company")).getName());
-		Assertions.assertEquals("dnc", ((CompanyOrg) sqlData.get(CacheDataType.COMPANY).get("company")).getDn());
+		final var sqlData = repository.getData();
+
+		Assertions.assertEquals("Company", ((INamableBean<?>) sqlData.get(CacheDataType.COMPANY).get("company")).getName());
+		Assertions.assertEquals("dnc", sqlData.get(CacheDataType.COMPANY).get("company").getDn());
 		final GroupOrg groupSql = (GroupOrg) sqlData.get(CacheDataType.GROUP).get("group");
 		Assertions.assertEquals("dn", groupSql.getDn());
 		Assertions.assertEquals("group", groupSql.getId());
@@ -150,8 +135,8 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void addGroupToGroup() {
-		final GroupOrg parent = groupSql2;
-		final GroupOrg child = groupSql;
+		final var parent = groupSql2;
+		final var child = groupSql;
 
 		// Check the initial status
 		Assertions.assertEquals(0, child.getSubGroups().size());
@@ -194,11 +179,9 @@ class CacheSqlRepositoryTest extends AbstractDataGeneratorTest {
 
 	@Test
 	void createGroup() {
-		final GroupOrg newGroupSql = new GroupOrg("dn3", "G3", new HashSet<>());
-
+		final var newGroupSql = new GroupOrg("dn3", "G3", new HashSet<>());
 		repository.create(newGroupSql);
-
-		Mockito.verify(cache).create(newGroupSql);
+		Mockito.verify(cache).create(newGroupSql,Collections.emptyMap() );
 		Assertions.assertEquals(newGroupSql, groups.get("g3"));
 	}
 

@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -223,11 +223,11 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	/**
-	 * One delegation to members of group "ligoj-gstack" to see the company "ing"
+	 * One delegation to members of group "ligoj-jupiter" to see the company "ing"
 	 */
 	@Test
 	void findAllUsingDelegateReceiverGroup() {
-		initSpringSecurityContext("alongchu");
+		initSpringSecurityContext("admin-test");
 		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
 
 		// Counts : 8 from ing, + 7 from the same company
@@ -236,12 +236,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(15, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("alongchu", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("admin-test", tableItem.getData().get(0).getId());
 		Assertions.assertFalse(tableItem.getData().get(0).isCanWrite());
 
 		// Check the groups
 		Assertions.assertEquals(1, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("ligoj-gStack", tableItem.getData().get(0).getGroups().get(0).getName());
+		Assertions.assertEquals("ligoj-Jupiter", tableItem.getData().get(0).getGroups().get(0).getName());
 	}
 
 	/**
@@ -1004,11 +1004,11 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(7, tableItem.getRecordsFiltered());
 
 		// Check the users
-		Assertions.assertEquals("alongchu", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("admin-test", tableItem.getData().get(0).getId());
 	}
 
 	/**
-	 * When the requested company does not exists, return an empty set.
+	 * When the requested company does not exist, return an empty set.
 	 */
 	@Test
 	void findAllUnknowFilteredCompany() {
@@ -1136,7 +1136,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	 * Check the uniqueMember is updated for the related groups
 	 */
 	protected void checkMember(final String dn) {
-		CacheGroup group = cacheGroupRepository.findByNameExpected("ligoj-gStack");
+		CacheGroup group = cacheGroupRepository.findByNameExpected("ligoj-Jupiter");
 		List<CacheMembership> members = cacheMembershipRepository.findAllBy("group", group);
 		Assertions.assertEquals(1, members.size());
 		Assertions.assertEquals(dn, members.get(0).getGroup().getDescription());
@@ -1146,7 +1146,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		initSpringSecurityContext(DEFAULT_USER);
 
 		// Restore lock status from SQL
-		final UserSqlCredential credential = credentialRepository.findBy("user.id", "alongchu");
+		final UserSqlCredential credential = credentialRepository.findBy("user.id", "admin-test");
 		credential.setValue("secret");
 		credential.setLocked(null);
 		credential.setLockedBy(null);
@@ -1167,12 +1167,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	}
 
 	protected CacheUser checkUnlocked() {
-		assertUnlocked(resource.findAll("ligoj", null, "alongchu", newUriInfo()).getData().get(0));
-		assertUnlocked(getUser().findByIdNoCache("alongchu"));
-		assertUnlocked(getUser().findById("alongchu"));
-		Assertions.assertTrue(getGroup().findAll().get("ligoj-gstack").getMembers().contains("alongchu"));
+		assertUnlocked(resource.findAll("ligoj", null, "admin-test", newUriInfo()).getData().get(0));
+		assertUnlocked(getUser().findByIdNoCache("admin-test"));
+		assertUnlocked(getUser().findById("admin-test"));
+		Assertions.assertTrue(getGroup().findAll().get("ligoj-jupiter").getMembers().contains("admin-test"));
 
-		final CacheUser result = getContext("alongchu");
+		final CacheUser result = getContext("admin-test");
 		Assertions.assertNull(credentialRepository.findBy("user", result).getLocked());
 		return result;
 	}
@@ -1180,15 +1180,15 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	protected CacheUser check(final String company, final String base, final String patternLocked,
 			final Consumer<SimpleUserOrg> checker) {
 		// Check the status at business layer
-		checker.accept(resource.findAll(company, null, "alongchu", newUriInfo()).getData().get(0));
-		checker.accept(resource.findById("alongchu"));
+		checker.accept(resource.findAll(company, null, "admin-test", newUriInfo()).getData().get(0));
+		checker.accept(resource.findById("admin-test"));
 
 		// Check the status at cache layer
-		Assertions.assertTrue(getGroup().findAll().get("ligoj-gstack").getMembers().contains("alongchu"));
-		checker.accept(getUser().findByIdNoCache("alongchu"));
+		Assertions.assertTrue(getGroup().findAll().get("ligoj-jupiter").getMembers().contains("admin-test"));
+		checker.accept(getUser().findByIdNoCache("admin-test"));
 
 		// Check in the status in the SQL
-		final CacheUser result = getContext(base, "alongchu");
+		final CacheUser result = getContext(base, "admin-test");
 
 		Assertions.assertNull(credentialRepository.findBy("user", result).getValue());
 		Assertions.assertNotNull(credentialRepository.findBy("user", result).getLocked());

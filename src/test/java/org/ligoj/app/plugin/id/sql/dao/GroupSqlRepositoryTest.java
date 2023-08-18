@@ -6,7 +6,7 @@ package org.ligoj.app.plugin.id.sql.dao;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,8 +48,7 @@ class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 				.addUserToGroup(ArgumentMatchers.any(UserOrg.class), ArgumentMatchers.any(GroupOrg.class));
 	}
 
-	@Test
-	void addUserAlreadyMember() {
+	@Test	void addUserAlreadyMember() {
 		final Set<String> users = new HashSet<>();
 		users.add("flast1");
 		final GroupSqlRepository groupRepository = new GroupSqlRepository() {
