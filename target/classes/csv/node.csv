@@ -1,3 +1,0 @@
-id;name;refined.id;mode;uiClasses;tag;tagUiClasses
-service:id:sql;Identity SQL;service:id;ALL;;;
-service:id:sql:local;Identity SQL Local;service:id:sql;ALL;;;

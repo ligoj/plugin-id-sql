@@ -1,5 +1,0 @@
-name;dn;locked;type
-Quarantine;ou=quarantine,dc=sample,dc=com;true;COMPANY
-People;ou=people,dc=sample,dc=com;true;COMPANY
-Internal;ou=internal,ou=people,dc=sample,dc=com;true;COMPANY
-Project;ou=project,dc=sample,dc=com;true;GROUP

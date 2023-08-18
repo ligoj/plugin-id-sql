@@ -1,4 +1,0 @@
-id;data;mandatory;secured;type;owner.id;defaultValue
-service:id:sql:salt-length;;false;false;INTEGER;service:id:sql;64
-service:id:sql:hash-iteration;;false;false;INTEGER;service:id:sql;10
-service:id:sql:key-length;;false;false;INTEGER;service:id:sql;256
