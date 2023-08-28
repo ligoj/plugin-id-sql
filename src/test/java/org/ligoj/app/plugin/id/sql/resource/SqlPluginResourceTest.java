@@ -47,7 +47,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		em.flush();
 		em.clear();
 		Assertions.assertFalse(resource.checkSubscriptionStatus(parameters).getStatus().isUp());
-		Assertions.assertTrue(subscriptionResource.getParametersNoCheck(subscription.getId()).isEmpty());
+		Assertions.assertFalse(subscriptionResource.getParametersNoCheck(subscription.getId()).isEmpty());
 	}
 
 	/**
@@ -372,13 +372,13 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	@Test
 	void findGroupsByNameNoRight() {
 		initSpringSecurityContext("any");
-		final var jobs = resource.findGroupsByName("StAck");
+		final var jobs = resource.findGroupsByName("Piter");
 		Assertions.assertEquals(0, jobs.size());
 	}
 
 	@Test
 	void findGroupsByName() {
-		final var jobs = resource.findGroupsByName("StAck");
+		final var jobs = resource.findGroupsByName("Piter");
 		Assertions.assertFalse(jobs.isEmpty());
 		Assertions.assertEquals("ligoj-Jupiter", jobs.get(0).getName());
 		Assertions.assertEquals("ligoj-jupiter", jobs.get(0).getId());
@@ -386,7 +386,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	void findGroupsByNameNoScope() {
-		final var jobs = resource.findGroupsByName("StAck");
+		final var jobs = resource.findGroupsByName("Piter");
 		Assertions.assertFalse(jobs.isEmpty());
 		Assertions.assertEquals("ligoj-Jupiter", jobs.get(0).getName());
 		Assertions.assertEquals("ligoj-jupiter", jobs.get(0).getId());

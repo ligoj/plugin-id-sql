@@ -228,7 +228,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	@Test
 	void findAllUsingDelegateReceiverGroup() {
 		initSpringSecurityContext("admin-test");
-		final TableItem<UserOrgVo> tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
+		final var tableItem = resource.findAll(null, null, null, newUriInfoAsc("id"));
 
 		// Counts : 8 from ing, + 7 from the same company
 		Assertions.assertEquals(15, tableItem.getRecordsTotal());
