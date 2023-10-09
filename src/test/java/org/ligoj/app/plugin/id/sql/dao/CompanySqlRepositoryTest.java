@@ -57,7 +57,7 @@ class CompanySqlRepositoryTest extends AbstractJpaTest {
 	@BeforeEach
 	void init2() throws IOException {
 		persistEntities("csv",
-				new Class[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
+				new Class<?>[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
 						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
 				StandardCharsets.UTF_8);

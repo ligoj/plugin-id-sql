@@ -1030,7 +1030,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	@BeforeEach
 	protected void prepareData() throws IOException {
 		super.prepareData();
-		persistEntities("csv", new Class[] { DelegateOrg.class }, StandardCharsets.UTF_8.name());
+		persistEntities("csv", new Class<?>[] { DelegateOrg.class }, StandardCharsets.UTF_8);
 
 		// Force the cache to be created
 		getUser().findAll();
