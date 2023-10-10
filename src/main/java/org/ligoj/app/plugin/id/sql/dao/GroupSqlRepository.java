@@ -3,14 +3,6 @@
  */
 package org.ligoj.app.plugin.id.sql.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
 import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.IGroupRepository;
 import org.ligoj.app.iam.UserOrg;
@@ -24,21 +16,14 @@ import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+
 /**
  * Group SQL repository
  */
 @Component
 public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg, CacheGroup>
 		implements IGroupRepository {
-
-	/**
-	 * Default DN member for new group. This is required for some SQL implementation where "uniqueMember" attribute is
-	 * required for "groupOfUniqueNames" class.
-	 *
-	 * @see <a href="https://msdn.microsoft.com/en-us/library/ms682261(v=vs.85).aspx">MSDN</a>
-	 * @see <a href="https://tools.ietf.org/html/rfc4519#page-19">IETF</a>
-	 */
-	public static final String DEFAULT_MEMBER_DN = "uid=none";
 
 	@Autowired
 	private CacheGroupRepository cacheGroupRepository;
@@ -92,11 +77,11 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 		for (final CacheMembership membership : cacheMembershipRepository.findAll()) {
 			final GroupOrg group = groups.get(membership.getGroup().getId());
 			if (membership.getUser() == null) {
-				// Sub-group membership
+				// Subgroup membership
 				group.getSubGroups().add(membership.getSubGroup().getId());
 
 				// Complete the inverse relationship
-				groups.get(membership.getSubGroup().getId()).getGroups().add(group.getId());
+				groups.get(membership.getSubGroup().getId()).setParent(group.getId());
 			} else {
 				// User membership
 				group.getMembers().add(membership.getUser().getId());
@@ -106,12 +91,14 @@ public class GroupSqlRepository extends AbstractContainerSqlRepository<GroupOrg,
 	}
 
 	private void removeFromJavaCache(final GroupOrg group) {
-		// Remove the sub groups from SQL
+		// Remove the subgroups from SQL
 		new ArrayList<>(group.getSubGroups()).stream().map(this::findById).filter(Objects::nonNull)
 				.forEach(child -> removeGroup(child, group.getId()));
 
-		// Remove from the parent SQL groups
-		new ArrayList<>(group.getGroups()).forEach(parent -> removeGroup(group, parent));
+		// Remove from the parent LDAP groups
+		if (group.getParent() != null) {
+			removeGroup(group, group.getParent());
+		}
 
 		// Also, update the raw cache
 		findAll().remove(group.getId());

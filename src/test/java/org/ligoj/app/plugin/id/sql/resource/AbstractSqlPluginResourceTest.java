@@ -11,10 +11,6 @@ import org.ligoj.app.dao.NodeRepository;
 import org.ligoj.app.dao.ParameterRepository;
 import org.ligoj.app.dao.ParameterValueRepository;
 import org.ligoj.app.dao.ProjectRepository;
-import org.ligoj.app.iam.GroupOrg;
-import org.ligoj.app.iam.ICompanyRepository;
-import org.ligoj.app.iam.IGroupRepository;
-import org.ligoj.app.iam.IUserRepository;
 import org.ligoj.app.iam.model.*;
 import org.ligoj.app.model.*;
 import org.ligoj.app.plugin.id.model.ContainerScope;
@@ -33,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Test class of {@link SqlPluginResource}
@@ -72,35 +69,33 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 	@Autowired
 	protected CacheSqlRepository cache;
 
-	protected IUserRepository userRepository;
-	protected IGroupRepository groupRepository;
-	protected ICompanyRepository companyRepository;
-
 	protected int subscription;
 
 	@BeforeEach
 	protected void prepareData() throws IOException {
 		persistEntities("csv",
-				new Class<?>[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
+				new Class<?>[]{DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
-						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
+						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class},
 				StandardCharsets.UTF_8);
 		cacheManager.getCache("container-scopes").clear();
 		cacheManager.getCache("id-configuration").clear();
 		cacheManager.getCache("id-sql-data").clear();
 
+		// Force the cache to be created
+		getUser().findAll();
+
 		// Only with Spring context
 		this.subscription = getSubscription("Jupiter", IdentityResource.SERVICE_KEY);
 
 		// Coverage only
-		Assertions.assertEquals("service:id:sql",resource.getKey());
+		Assertions.assertEquals("service:id:sql", resource.getKey());
 	}
 
 	/**
 	 * Create a group in an existing OU "sea". Most Simple case. Group matches exactly to the pkey of the project.
-	 * 
-	 * @param groupAndProject The group identifier.
 	 *
+	 * @param groupAndProject The group identifier.
 	 * @return the created subscription.
 	 */
 	protected Subscription create(final String groupAndProject) {
@@ -108,9 +103,9 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 		Assertions.assertNull(getGroup().findById(groupAndProject));
 
 		// Attach the new group
-		final Subscription subscription = em.find(Subscription.class, this.subscription);
-		final Subscription subscription2 = new Subscription();
-		final Project newProject = newProject(groupAndProject);
+		final var subscription = em.find(Subscription.class, this.subscription);
+		final var subscription2 = new Subscription();
+		final var newProject = newProject(groupAndProject);
 		subscription2.setProject(newProject);
 		subscription2.setNode(subscription.getNode());
 		em.persist(subscription2);
@@ -122,7 +117,7 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 		basicCreate(subscription2);
 
 		// Checks
-		final GroupOrg groupSql = getGroup().findById(groupAndProject);
+		final var groupSql = getGroup().findById(groupAndProject);
 		Assertions.assertNotNull(groupSql);
 		Assertions.assertEquals(groupAndProject, groupSql.getName());
 		Assertions.assertEquals(groupAndProject, groupSql.getId());
@@ -132,24 +127,13 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 	}
 
 	/**
-	 * Reload the SQL cache
-	 */
-	protected void reloadSqlCache() {
-		// Ensure SQL cache is loaded
-		cacheManager.getCache("id-sql-data").clear();
-		cache.getData();
-		em.flush();
-		em.clear();
-	}
-
-	/**
 	 * Create a new project
-	 * 
+	 *
 	 * @param pkey The project key.
 	 * @return The resolved project.
 	 */
 	protected Project newProject(final String pkey) {
-		final Project project = new Project();
+		final var project = new Project();
 		project.setPkey(pkey);
 		project.setName("ANY - " + pkey);
 		project.setTeamLeader(DEFAULT_USER);
@@ -161,9 +145,9 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 		setData(subscription, IdentityResource.PARAMETER_GROUP, group);
 	}
 
-	protected ParameterValue setData(final Subscription subscription, final String parameter, String data) {
-		final Parameter groupParameter = parameterRepository.findOneExpected(parameter);
-		ParameterValue value = parameterValueRepository
+	protected void setData(final Subscription subscription, final String parameter, String data) {
+		final var groupParameter = parameterRepository.findOneExpected(parameter);
+		var value = parameterValueRepository
 				.findAllBy("subscription.id", subscription.isNew() ? 0 : subscription.getId()).stream()
 				.filter(v -> v.getParameter().getId().equals(parameter)).findFirst().orElseGet(() -> {
 					final ParameterValue pv = new ParameterValue();
@@ -177,7 +161,6 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 			em.persist(value);
 		}
 		em.flush();
-		return value;
 	}
 
 	protected void setOu(final Subscription subscription, final String ou) {
@@ -204,11 +187,10 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 
 	/**
 	 * Create a group inside another group/ Both are created inside "sea" OU.
-	 * 
+	 *
 	 * @param newProject  The source project.
 	 * @param parentGroup The related parent group.
 	 * @param subGroup    The subgroup.
-	 *
 	 * @return the created {@link Subscription}.
 	 */
 	protected Subscription createSubGroup(final Project newProject, final String parentGroup, final String subGroup) {
@@ -218,8 +200,8 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 		Assertions.assertNull(getGroup().findById(subGroup));
 
 		// Attach the new group
-		final Subscription subscription = em.find(Subscription.class, this.subscription);
-		final Subscription subscription2 = new Subscription();
+		final var subscription = em.find(Subscription.class, this.subscription);
+		final var subscription2 = new Subscription();
 		subscription2.setProject(newProject);
 		subscription2.setNode(subscription.getNode());
 		em.persist(subscription2);
@@ -232,22 +214,20 @@ public abstract class AbstractSqlPluginResourceTest extends AbstractPluginIdTest
 		basicCreate(subscription2);
 
 		// Checks
-		final GroupOrg groupSql = getGroup().findById(subGroup);
+		final var groupSql = getGroup().findById(subGroup);
 		Assertions.assertNotNull(groupSql);
 		Assertions.assertEquals(subGroup, groupSql.getName());
 		Assertions.assertEquals("cn=" + subGroup + ",cn=" + parentGroup + ",ou=sea,ou=project,dc=sample,dc=com",
 				groupSql.getDn());
 		Assertions.assertEquals(subGroup, groupSql.getId());
-		Assertions.assertEquals(1, groupSql.getGroups().size());
-		Assertions.assertTrue(groupSql.getGroups().contains(parentGroup));
-		final GroupOrg groupSqlParent = getGroup().findById(parentGroup);
-		Assertions.assertEquals(1, groupSqlParent.getSubGroups().size());
-		Assertions.assertTrue(groupSqlParent.getSubGroups().contains(subGroup));
+		Assertions.assertEquals(parentGroup, groupSql.getParent());
+		final var groupSqlParent = getGroup().findById(parentGroup);
+		Assertions.assertIterableEquals(List.of(subGroup), groupSqlParent.getSubGroups());
 		return subscription2;
 	}
 
 	protected void persistParameter(final Node node, final String id, final String value) {
-		final ParameterValue parameterValue = new ParameterValue();
+		final var parameterValue = new ParameterValue();
 		parameterValue.setNode(node);
 		parameterValue.setParameter(parameterRepository.findOneExpected(id));
 		parameterValue.setData(value);

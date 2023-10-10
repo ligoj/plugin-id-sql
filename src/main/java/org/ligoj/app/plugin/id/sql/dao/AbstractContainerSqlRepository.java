@@ -3,16 +3,8 @@
  */
 package org.ligoj.app.plugin.id.sql.dao;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,16 +21,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.*;
 
 /**
  * A SQL container repository.
  *
- * @param <T>
- *            The container type.
- * @param <C>
- *            The container cache type.
+ * @param <T> The container type.
+ * @param <C> The container cache type.
  */
 public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C extends CacheContainer>
 		implements IContainerRepository<T> {
@@ -78,10 +67,8 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 	/**
 	 * Create a new container bean. Not in SQL repository.
 	 *
-	 * @param dn
-	 *            The unique DN of the container.
-	 * @param cn
-	 *            The human readable name (CN) that will be used to build the identifier.
+	 * @param dn The unique DN of the container.
+	 * @param cn The human readable name (CN) that will be used to build the identifier.
 	 * @return A new transient container bean. Never <code>null</code>.
 	 */
 	protected abstract T newContainer(String dn, String cn);
@@ -117,12 +104,10 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 	/**
 	 * Find a container from its identifier. Security is applied regarding the given user.
 	 *
-	 * @param user
-	 *            The user requesting this container.
-	 * @param id
-	 *            The container's identifier. Will be normalized.
+	 * @param user The user requesting this container.
+	 * @param id   The container's identifier. Will be normalized.
 	 * @return The container from its identifier. <code>null</code> if the container is not found or cannot be seen by
-	 *         the given user.
+	 * the given user.
 	 */
 	@Override
 	public T findById(final String user, final String id) {

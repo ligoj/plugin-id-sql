@@ -78,11 +78,6 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	 */
 	public static final String PARAMETER_KEY_ALG = KEY + ":key-alg";
 
-	/**
-	 * Base DN where people, groups and companies are located
-	 */
-	public static final String PARAMETER_BASE_DN = KEY + ":base-dn";
-
 	@Autowired
 	protected GroupResource groupResource;
 
@@ -144,7 +139,7 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 
 		// Create the group inside the parent (OU or parent CN)
 		final String groupDn = "cn=" + group + "," + parentDn;
-		log.info("New Group CN would be created {} project {} and subscription {}", group, pkey);
+		log.info("New Group CN={} will be created in project {} and subscription {}", group, pkey, subscription);
 		final GroupSqlRepository repository = getGroup();
 		final GroupOrg groupSql = repository.create(groupDn, group);
 
