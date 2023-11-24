@@ -145,15 +145,15 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void setPassword() {
-		Assertions.assertTrue(repository.authenticate("jdoe4", "Azerty01"));
+		Assertions.assertEquals("jdoe4", repository.authenticate("jdoe4", "Azerty01").getName());
 		setPassword("Azerty01", "new-password");
 		Assertions.assertTrue(credentialRepository.findByExpected("user.id", "jdoe4").getSalt().length() >= 64);
 		Assertions.assertTrue(credentialRepository.findByExpected("user.id", "jdoe4").getValue().length() >= 32);
-		Assertions.assertTrue(repository.authenticate("jdoe4", "new-password"));
-		Assertions.assertFalse(repository.authenticate("jdoe4", "Azerty01"));
+		Assertions.assertEquals("jdoe4", repository.authenticate("jdoe4", "new-password").getName());
+		Assertions.assertNull(repository.authenticate("jdoe4", "Azerty01"));
 
 		// This user has the same credential, but hashed with a different salt
-		Assertions.assertTrue(repository.authenticate("fdoe2", "new-password"));
+		Assertions.assertEquals("fdoe2", repository.authenticate("fdoe2", "new-password").getName());
 	}
 
 	@Test
@@ -170,7 +170,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void authenticateNoCredential() {
-		Assertions.assertFalse(repository.authenticate("flast0", "any"));
+		Assertions.assertNull(repository.authenticate("flast0", "any"));
 	}
 
 	@Test
