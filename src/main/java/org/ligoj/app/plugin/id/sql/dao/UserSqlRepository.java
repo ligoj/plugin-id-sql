@@ -444,9 +444,9 @@ public class UserSqlRepository implements IUserRepository {
 	}
 
 	@Override
-	public boolean authenticate(final String name, final String password) {
+	public UserOrg authenticate(final String name, final String password) {
 		log.info("Authenticating {} ...", name);
-		final UserSqlCredential credential = credentialRepository.findBy(USER_ID, name);
+		final var credential = credentialRepository.findBy(USER_ID, name);
 
 		final String salt;
 		final String value;
@@ -469,7 +469,7 @@ public class UserSqlRepository implements IUserRepository {
 					keyLength).equals(value);
 		}
 		log.info("Authenticate {} : {}", name, result);
-		return result;
+		return result ? findById(name) : null;
 	}
 
 	@Override
@@ -518,7 +518,7 @@ public class UserSqlRepository implements IUserRepository {
 	@Override
 	public void setPassword(final UserOrg user, final String password, final String newPassword) {
 		log.info("Changing password for {} ...", user.getId());
-		if (password == null || authenticate(user.getId(), password)) {
+		if (password == null || authenticate(user.getId(), password) == null) {
 			setPassword(user, newPassword);
 			// Also unlock account
 			unlock(user);
