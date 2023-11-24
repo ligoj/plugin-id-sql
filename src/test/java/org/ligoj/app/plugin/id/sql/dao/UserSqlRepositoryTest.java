@@ -3,29 +3,15 @@
  */
 package org.ligoj.app.plugin.id.sql.dao;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
 import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ligoj.app.iam.CompanyOrg;
 import org.ligoj.app.iam.UserOrg;
-import org.ligoj.app.iam.model.CacheCompany;
-import org.ligoj.app.iam.model.CacheGroup;
-import org.ligoj.app.iam.model.CacheMembership;
-import org.ligoj.app.iam.model.CacheUser;
-import org.ligoj.app.iam.model.DelegateOrg;
-import org.ligoj.app.model.CacheProjectGroup;
-import org.ligoj.app.model.Node;
-import org.ligoj.app.model.Parameter;
-import org.ligoj.app.model.ParameterValue;
-import org.ligoj.app.model.Project;
-import org.ligoj.app.model.Subscription;
+import org.ligoj.app.iam.model.*;
+import org.ligoj.app.model.*;
 import org.ligoj.app.plugin.id.model.ContainerScope;
 import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
 import org.ligoj.bootstrap.AbstractJpaTest;
@@ -37,6 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 /**
  * Test class of {@link UserSqlRepository}
@@ -55,9 +45,9 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 	@BeforeEach
 	void init2() throws IOException {
 		persistEntities("csv",
-				new Class<?>[] { DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
+				new Class<?>[]{DelegateOrg.class, ContainerScope.class, CacheCompany.class, CacheUser.class,
 						CacheGroup.class, CacheMembership.class, Project.class, Node.class, Parameter.class,
-						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class },
+						Subscription.class, ParameterValue.class, CacheProjectGroup.class, UserSqlCredential.class},
 				StandardCharsets.UTF_8);
 		repository = new UserSqlRepository();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(repository);
@@ -66,7 +56,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void toUser() {
-		final UserSqlRepository repository = new UserSqlRepository() {
+		final var repository = new UserSqlRepository() {
 			@Override
 			public UserOrg findById(final String login) {
 				final UserOrg userSql = new UserOrg();
@@ -82,7 +72,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void toUserNotExist() {
-		final UserSqlRepository repository = new UserSqlRepository() {
+		final var repository = new UserSqlRepository() {
 			@Override
 			public UserOrg findById(final String login) {
 				return null;
@@ -112,7 +102,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void findByIdExpectedNotVisibleCompany() {
-		final UserSqlRepository repository = new UserSqlRepository() {
+		final var repository = new UserSqlRepository() {
 			@Override
 			public UserOrg findById(final String login) {
 				UserOrg user = new UserOrg();
@@ -121,14 +111,12 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 			}
 		};
 		repository.setCompanyRepository(Mockito.mock(CompanySqlRepository.class));
-		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> {
-			repository.findByIdExpected("user1", "user2");
-		}), "id", "unknown-id");
+		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> repository.findByIdExpected("user1", "user2")), "id", "unknown-id");
 	}
 
 	@Test
 	void findByIdExpected() {
-		final UserSqlRepository repository = new UserSqlRepository() {
+		final var repository = new UserSqlRepository() {
 			@Override
 			public UserOrg findById(final String login) {
 				UserOrg user = new UserOrg();
@@ -137,7 +125,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 				return user;
 			}
 		};
-		CompanySqlRepository mock = Mockito.mock(CompanySqlRepository.class);
+		var mock = Mockito.mock(CompanySqlRepository.class);
 		Mockito.when(mock.findById("user1", "company")).thenReturn(new CompanyOrg("", ""));
 		repository.setCompanyRepository(mock);
 		repository.findByIdExpected("user1", "user2");
@@ -163,7 +151,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void setPasswordFirst() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		user.setId("flast0");
 		repository.setPassword(user, null, "new-password");
 	}
@@ -189,12 +177,12 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void isolateRestore() {
-		final UserOrg cacheUser = newUser();
+		final var cacheUser = newUser();
 		cacheUser.setCompany("socygan");
 
 		// Restore not isolated
 		repository.restore(cacheUser);
-		final UserSqlCredential user = credentialRepository.findBy("user.id", "jdoe4");
+		final var user = credentialRepository.findBy("user.id", "jdoe4");
 		Assertions.assertNotNull(user.getValue());
 		Assertions.assertNull(user.getLocked());
 		Assertions.assertNull(user.getLockedBy());
@@ -206,7 +194,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 		// Restore
 		repository.restore(cacheUser);
-		final UserSqlCredential user2 = credentialRepository.findBy("user.id", "jdoe4");
+		final var user2 = credentialRepository.findBy("user.id", "jdoe4");
 		Assertions.assertNull(user2.getValue());
 		Assertions.assertNull(user2.getLocked());
 		Assertions.assertNull(user2.getLockedBy());
@@ -221,7 +209,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	private void isolate(final UserOrg cacheUser) {
 		repository.isolate("fdaugan", cacheUser);
-		final UserSqlCredential user = credentialRepository.findBy("user.id", "jdoe4");
+		final var user = credentialRepository.findBy("user.id", "jdoe4");
 		Assertions.assertNull(user.getValue());
 		Assertions.assertNotNull(user.getLocked());
 		Assertions.assertEquals("fdaugan", user.getLockedBy());
@@ -235,9 +223,9 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void lock() {
-		final UserOrg cacheUser = newUser();
+		final var cacheUser = newUser();
 		repository.lock("fdaugan", cacheUser);
-		final UserSqlCredential user = credentialRepository.findBy("user.id", "jdoe4");
+		final var user = credentialRepository.findBy("user.id", "jdoe4");
 		Assertions.assertNull(user.getValue());
 		Assertions.assertNotNull(user.getLocked());
 		Assertions.assertEquals("fdaugan", user.getLockedBy());
@@ -249,11 +237,11 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void lockAlreadyLocked() {
-		final UserOrg cacheUser = newUser();
+		final var cacheUser = newUser();
 		cacheUser.setLocked(new Date());
 		cacheUser.setLockedBy("someone");
 		repository.lock("fdaugan", cacheUser);
-		final UserSqlCredential user = credentialRepository.findBy("user.id", "jdoe4");
+		final var user = credentialRepository.findBy("user.id", "jdoe4");
 		Assertions.assertEquals("jdoe4", user.getUser().getId()); // Coverage only
 
 		// Unchanged
@@ -266,18 +254,18 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void setPasswordBadPassword() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class,
 				() -> repository.setPassword(user, "wrong-old-password", "new-password")), "password", "login");
 	}
 
 	private void setPassword(final String password, final String newPassword) {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		repository.setPassword(user, password, newPassword);
 	}
 
 	private UserOrg newUser() {
-		final UserOrg user = new UserOrg();
+		final var user = new UserOrg();
 		user.setDn("cn=Any");
 		user.setId("jdoe4");
 		return user;
@@ -285,7 +273,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void checkUserStatus() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		repository.checkLockStatus(user);
 
 		Assertions.assertNull(user.getLocked());
@@ -296,9 +284,9 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void unlockNoLocked() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 
-		// Dirty flag, should never occurs, but this flag is used to check the untouched user
+		// Dirty flag, should never occur, but this flag is used to check the untouched user
 		user.setLockedBy("some");
 
 		repository.unlock(user);
@@ -309,7 +297,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void unlockIsolated() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		user.setIsolated("old-company");
 
 		repository.unlock(user);
@@ -319,7 +307,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void unlock() {
-		final UserOrg user = newUser();
+		final var user = newUser();
 		user.setLocked(new Date());
 		user.setLockedBy("some");
 
