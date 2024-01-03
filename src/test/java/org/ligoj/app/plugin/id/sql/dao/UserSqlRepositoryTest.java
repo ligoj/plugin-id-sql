@@ -90,7 +90,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void getToken() {
-		Assertions.assertEquals("Azerty01", repository.getToken("jdoe4"));
+		Assertions.assertEquals("Secret1", repository.getToken("jdoe4"));
 		Assertions.assertEquals("credential", repository.getToken("jdoe5"));
 		Assertions.assertNull(repository.getToken("any"));
 	}
@@ -133,12 +133,12 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 
 	@Test
 	void setPassword() {
-		Assertions.assertEquals("jdoe4", repository.authenticate("jdoe4", "Azerty01").getName());
-		setPassword("Azerty01", "new-password");
+		Assertions.assertEquals("jdoe4", repository.authenticate("jdoe4", "Secret1").getName());
+		setPassword("Secret1", "new-password");
 		Assertions.assertTrue(credentialRepository.findByExpected("user.id", "jdoe4").getSalt().length() >= 64);
 		Assertions.assertTrue(credentialRepository.findByExpected("user.id", "jdoe4").getValue().length() >= 32);
 		Assertions.assertEquals("jdoe4", repository.authenticate("jdoe4", "new-password").getName());
-		Assertions.assertNull(repository.authenticate("jdoe4", "Azerty01"));
+		Assertions.assertNull(repository.authenticate("jdoe4", "Secret1"));
 
 		// This user has the same credential, but hashed with a different salt
 		Assertions.assertEquals("fdoe2", repository.authenticate("fdoe2", "new-password").getName());
@@ -245,7 +245,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 		Assertions.assertEquals("jdoe4", user.getUser().getId()); // Coverage only
 
 		// Unchanged
-		Assertions.assertEquals("Azerty01", user.getValue());
+		Assertions.assertEquals("Secret1", user.getValue());
 
 		// Check the cache
 		Assertions.assertNotNull(cacheUser.getLocked());

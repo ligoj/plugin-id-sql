@@ -380,16 +380,16 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 	void findGroupsByName() {
 		final var jobs = resource.findGroupsByName("Piter");
 		Assertions.assertFalse(jobs.isEmpty());
-		Assertions.assertEquals("ligoj-Jupiter", jobs.get(0).getName());
-		Assertions.assertEquals("ligoj-jupiter", jobs.get(0).getId());
+		Assertions.assertEquals("ligoj-Jupiter", jobs.getFirst().getName());
+		Assertions.assertEquals("ligoj-jupiter", jobs.getFirst().getId());
 	}
 
 	@Test
 	void findGroupsByNameNoScope() {
 		final var jobs = resource.findGroupsByName("Piter");
 		Assertions.assertFalse(jobs.isEmpty());
-		Assertions.assertEquals("ligoj-Jupiter", jobs.get(0).getName());
-		Assertions.assertEquals("ligoj-jupiter", jobs.get(0).getId());
+		Assertions.assertEquals("ligoj-Jupiter", jobs.getFirst().getName());
+		Assertions.assertEquals("ligoj-jupiter", jobs.getFirst().getId());
 	}
 
 	@Test
@@ -427,8 +427,8 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	void authenticatePrimary() {
-		final var authentication = new UsernamePasswordAuthenticationToken("jdoe4", "Azerty01");
-		Assertions.assertSame(authentication, resource.authenticate(authentication, "service:id:sql:local", true));
+		final var authentication = resource.authenticate(new UsernamePasswordAuthenticationToken("jdoe4", "Secret1"), "service:id:sql:local", true);
+		Assertions.assertEquals("jdoe4",authentication.getName());
 	}
 
 	@Test
@@ -463,7 +463,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("mmartin", userLdap.getName());
 		Assertions.assertEquals("Marc", userLdap.getFirstName());
 		Assertions.assertEquals("Martin", userLdap.getLastName());
-		Assertions.assertEquals("marc.martin@sample.com", userLdap.getMails().get(0));
+		Assertions.assertEquals("marc.martin@sample.com", userLdap.getMails().getFirst());
 	}
 
 	@Test
@@ -482,7 +482,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("First", userLdap.getFirstName());
 		Assertions.assertEquals("Last123", userLdap.getLastName());
 		Assertions.assertEquals("ligoj", userLdap.getCompany());
-		Assertions.assertEquals("some@where.com", userLdap.getMails().get(0));
+		Assertions.assertEquals("some@where.com", userLdap.getMails().getFirst());
 		userResource.delete("flast123");
 	}
 
@@ -502,7 +502,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("Marc", userLdap.getFirstName());
 		Assertions.assertEquals("Martin", userLdap.getLastName());
 		Assertions.assertEquals("ligoj", userLdap.getCompany());
-		Assertions.assertEquals("some@where.com", userLdap.getMails().get(0));
+		Assertions.assertEquals("some@where.com", userLdap.getMails().getFirst());
 		userResource.delete("mmartin1");
 	}
 
@@ -541,7 +541,7 @@ class SqlPluginResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Test
 	void authenticateSecondaryNoMail() {
-		final var authentication = new UsernamePasswordAuthenticationToken("jdupont", "Azerty01");
+		final var authentication = new UsernamePasswordAuthenticationToken("jdupont", "Secret1");
 		Assertions.assertThrows(NotAuthorizedException.class, () -> resource.authenticate(authentication, "service:id:sql:secondary", false));
 	}
 

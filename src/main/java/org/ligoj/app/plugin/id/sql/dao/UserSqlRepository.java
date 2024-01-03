@@ -3,35 +3,20 @@
  */
 package org.ligoj.app.plugin.id.sql.dao;
 
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.*;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.naming.Name;
-import javax.naming.ldap.LdapName;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
-import org.ligoj.app.iam.CompanyOrg;
-import org.ligoj.app.iam.GroupOrg;
-import org.ligoj.app.iam.IUserRepository;
-import org.ligoj.app.iam.SimpleUser;
-import org.ligoj.app.iam.UserOrg;
+import org.ligoj.app.iam.*;
 import org.ligoj.app.iam.dao.CacheUserRepository;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
-import org.ligoj.app.plugin.id.model.CompanyComparator;
-import org.ligoj.app.plugin.id.model.FirstNameComparator;
-import org.ligoj.app.plugin.id.model.LastNameComparator;
-import org.ligoj.app.plugin.id.model.LoginComparator;
-import org.ligoj.app.plugin.id.model.MailComparator;
+import org.ligoj.app.plugin.id.model.*;
 import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
 import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
 import org.ligoj.bootstrap.core.DateUtils;
@@ -44,9 +29,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.naming.Name;
+import javax.naming.ldap.LdapName;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.*;
 
 /**
  * User SQL repository
@@ -71,7 +61,7 @@ public class UserSqlRepository implements IUserRepository {
 			.filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
 
 	/**
-	 * Base DN for internal people. Should be a subset of people, so including {@link #peopleBaseDn}
+	 * Base DN for internal people. Should be a subset of people DN.
 	 */
 	@Getter
 	private String peopleInternalBaseDn = "ou=internal,ou=people";
@@ -235,7 +225,7 @@ public class UserSqlRepository implements IUserRepository {
 		final List<Sort.Order> orders = IteratorUtils
 				.toList(ObjectUtils.defaultIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
 		orders.add(DEFAULT_ORDER);
-		final Sort.Order order = orders.get(0);
+		final Sort.Order order = orders.getFirst();
 		Comparator<UserOrg> comparator = ObjectUtils.defaultIfNull(COMPARATORS.get(order.getProperty()),
 				DEFAULT_COMPARATOR);
 		if (order.getDirection() == Direction.DESC) {
@@ -297,7 +287,7 @@ public class UserSqlRepository implements IUserRepository {
 		return StringUtils.containsIgnoreCase(userSql.getFirstName(), criteria)
 				|| StringUtils.containsIgnoreCase(userSql.getLastName(), criteria)
 				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria)
-				|| !userSql.getMails().isEmpty() && StringUtils.containsIgnoreCase(userSql.getMails().get(0), criteria);
+				|| !userSql.getMails().isEmpty() && StringUtils.containsIgnoreCase(userSql.getMails().getFirst(), criteria);
 	}
 
 	@Override
@@ -518,13 +508,12 @@ public class UserSqlRepository implements IUserRepository {
 	@Override
 	public void setPassword(final UserOrg user, final String password, final String newPassword) {
 		log.info("Changing password for {} ...", user.getId());
-		if (password == null || authenticate(user.getId(), password) == null) {
-			setPassword(user, newPassword);
-			// Also unlock account
-			unlock(user);
-		} else {
+		if (password != null && authenticate(user.getId(), password) == null) {
 			throw new ValidationJsonException("password", "login");
 		}
+		setPassword(user, newPassword);
+		// Also unlock account
+		unlock(user);
 	}
 
 }
