@@ -42,19 +42,13 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 	protected CacheSqlRepository repository;
 
 	/**
-	 * Human readable type name.
+	 * Human-readable type name.
 	 */
 	@Getter
 	protected final String typeName;
 
-	/**
-	 * Container type.
-	 */
-	private final ContainerType type;
-
 	protected AbstractContainerSqlRepository(final ContainerType type) {
-		this.type = type;
-		this.typeName = this.type.name().toLowerCase(Locale.ENGLISH);
+		this.typeName = type.name().toLowerCase(Locale.ENGLISH);
 	}
 
 	/**
@@ -68,7 +62,7 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 	 * Create a new container bean. Not in SQL repository.
 	 *
 	 * @param dn The unique DN of the container.
-	 * @param cn The human readable name (CN) that will be used to build the identifier.
+	 * @param cn The human-readable name (CN) that will be used to build the identifier.
 	 * @return A new transient container bean. Never <code>null</code>.
 	 */
 	protected abstract T newContainer(String dn, String cn);
@@ -85,7 +79,7 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 		final List<Sort.Order> orders = IteratorUtils
 				.toList(ObjectUtils.defaultIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
 		orders.add(DEFAULT_ORDER);
-		final Sort.Order order = orders.get(0);
+		final Sort.Order order = orders.getFirst();
 		Comparator<T> comparator = customComparators.get(order.getProperty());
 		if (order.getDirection() == Direction.DESC) {
 			comparator = Collections.reverseOrder(comparator);

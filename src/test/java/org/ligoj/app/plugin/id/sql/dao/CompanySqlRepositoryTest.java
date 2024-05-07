@@ -90,7 +90,7 @@ class CompanySqlRepositoryTest extends AbstractJpaTest {
 		final Map<String, Comparator<CompanyOrg>> customComparators = new HashMap<>();
 		final Page<CompanyOrg> all = repository.findAll(containers, "o", PageRequest.of(0, 10), customComparators);
 		Assertions.assertEquals(2, all.getContent().size());
-		Assertions.assertEquals("other", all.getContent().get(0).getId());
+		Assertions.assertEquals("other", all.getContent().getFirst().getId());
 		Assertions.assertEquals("sub-other", all.getContent().get(1).getId());
 		repository.delete(createInternal);
 		Assertions.assertEquals(9, repository.findAll().size());
@@ -110,7 +110,7 @@ class CompanySqlRepositoryTest extends AbstractJpaTest {
 		final Page<CompanyOrg> all = repository.findAll(containers, "", PageRequest.of(0, 10, Direction.DESC, "id"),
 				Collections.emptyMap());
 		Assertions.assertEquals(1, all.getContent().size());
-		Assertions.assertEquals("other", all.getContent().get(0).getId());
+		Assertions.assertEquals("other", all.getContent().getFirst().getId());
 	}
 
 	@Test

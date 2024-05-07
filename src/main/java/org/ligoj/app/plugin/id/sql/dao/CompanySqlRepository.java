@@ -30,7 +30,7 @@ public class CompanySqlRepository extends AbstractContainerSqlRepository<Company
 		implements ICompanyRepository {
 
 	/**
-	 * Special company that will contains the isolated accounts.
+	 * Special company that will contain the isolated accounts.
 	 */
 	private static final String QUARANTINE_DN = "ou=quarantine";
 

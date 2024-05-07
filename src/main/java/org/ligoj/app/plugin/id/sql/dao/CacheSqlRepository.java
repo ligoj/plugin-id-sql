@@ -24,9 +24,9 @@ public class CacheSqlRepository extends AbstractMemCacheRepository {
 
 	/**
 	 * Reset the database cache with the SQL data. Note there is no synchronization for this method. Initial first
-	 * concurrent calls may note involve the cache.
+	 * concurrent calls may not involve the cache.
 	 *
-	 * @return The cached SQL data..
+	 * @return The cached SQL data.
 	 */
 	@Override
 	public Map<CacheDataType, Map<String, ? extends ResourceOrg>> getData() {

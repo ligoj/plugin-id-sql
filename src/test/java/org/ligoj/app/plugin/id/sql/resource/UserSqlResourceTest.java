@@ -10,19 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.ligoj.app.iam.IamProvider;
 import org.ligoj.app.iam.SimpleUserOrg;
 import org.ligoj.app.iam.UserOrg;
-import org.ligoj.app.iam.dao.CacheGroupRepository;
-import org.ligoj.app.iam.dao.CacheMembershipRepository;
 import org.ligoj.app.iam.dao.CacheUserRepository;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.iam.model.DelegateOrg;
 import org.ligoj.app.plugin.id.resource.UserOrgEditionVo;
 import org.ligoj.app.plugin.id.resource.UserOrgResource;
-import org.ligoj.app.plugin.id.resource.UserOrgVo;
 import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
-import org.ligoj.app.plugin.id.sql.dao.UserSqlCredentialRepository;
 import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
 import org.ligoj.bootstrap.MatcherUtil;
-import org.ligoj.bootstrap.core.json.TableItem;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
@@ -33,7 +28,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.function.Consumer;
 
 /**
  * Test of {@link UserOrgResource} Delegate
@@ -41,15 +35,7 @@ import java.util.function.Consumer;
 class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 
 	@Autowired
-	protected UserSqlCredentialRepository credentialRepository;
-
-	@Autowired
-	protected CacheGroupRepository cacheGroupRepository;
-	@Autowired
 	protected CacheUserRepository cacheUserRepository;
-
-	@Autowired
-	protected CacheMembershipRepository cacheMembershipRepository;
 
 	@Test
 	void findById() {
@@ -65,7 +51,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("Fabrice", user.getFirstName());
 		Assertions.assertEquals("Daugan", user.getLastName());
 		Assertions.assertEquals("ligoj", user.getCompany());
-		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().get(0));
+		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().getFirst());
 	}
 
 	@Test
@@ -78,7 +64,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	void findBy() {
 		final var users = resource.findAllBy("mails", "marc.martin@sample.com");
 		Assertions.assertEquals(1, users.size());
-		final var user = users.get(0);
+		final var user = users.getFirst();
 		Assertions.assertEquals("mmartin", user.getName());
 	}
 
@@ -105,7 +91,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(2, tableItem.getRecordsFiltered());
 
 		// Check the users
-		final var user = tableItem.getData().get(0);
+		final var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("fdoe2", user.getId());
 		Assertions.assertEquals("jdoe5", tableItem.getData().get(1).getId());
 
@@ -113,11 +99,11 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("ing", user.getCompany());
 		Assertions.assertEquals("First2", user.getFirstName());
 		Assertions.assertEquals("Doe2", user.getLastName());
-		Assertions.assertEquals("first2.doe2@ing.fr", user.getMails().get(0));
+		Assertions.assertEquals("first2.doe2@ing.fr", user.getMails().getFirst());
 		Assertions.assertTrue(user.isCanWrite());
 		final var groups = new ArrayList<>(user.getGroups());
 		Assertions.assertEquals(2, groups.size());
-		Assertions.assertEquals("Biz Agency", groups.get(0).getName());
+		Assertions.assertEquals("Biz Agency", groups.getFirst().getName());
 		Assertions.assertEquals("DIG RHA", groups.get(1).getName());
 	}
 
@@ -129,17 +115,17 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(2, tableItem.getRecordsFiltered());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
 		Assertions.assertEquals("jdoe5", tableItem.getData().get(1).getId());
 
 		// Check the other attributes
-		Assertions.assertEquals("ing", tableItem.getData().get(0).getCompany());
-		Assertions.assertEquals("First2", tableItem.getData().get(0).getFirstName());
-		Assertions.assertEquals("Doe2", tableItem.getData().get(0).getLastName());
-		Assertions.assertEquals("first2.doe2@ing.fr", tableItem.getData().get(0).getMails().get(0));
-		final var groups = new ArrayList<>(tableItem.getData().get(0).getGroups());
+		Assertions.assertEquals("ing", tableItem.getData().getFirst().getCompany());
+		Assertions.assertEquals("First2", tableItem.getData().getFirst().getFirstName());
+		Assertions.assertEquals("Doe2", tableItem.getData().getFirst().getLastName());
+		Assertions.assertEquals("first2.doe2@ing.fr", tableItem.getData().getFirst().getMails().getFirst());
+		final var groups = new ArrayList<>(tableItem.getData().getFirst().getGroups());
 		Assertions.assertEquals(2, groups.size());
-		Assertions.assertEquals("Biz Agency", groups.get(0).getName());
+		Assertions.assertEquals("Biz Agency", groups.getFirst().getName());
 		Assertions.assertEquals("DIG RHA", groups.get(1).getName());
 	}
 
@@ -150,18 +136,18 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(4, tableItem.size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.get(0).getId());
+		Assertions.assertEquals("fdoe2", tableItem.getFirst().getId());
 		Assertions.assertEquals("jdoe4", tableItem.get(1).getId());
 		Assertions.assertEquals("jdoe5", tableItem.get(2).getId());
 
 		// Check the other attributes
-		Assertions.assertEquals("ing", tableItem.get(0).getCompany());
-		Assertions.assertEquals("First2", tableItem.get(0).getFirstName());
-		Assertions.assertEquals("Doe2", tableItem.get(0).getLastName());
-		Assertions.assertEquals("first2.doe2@ing.fr", tableItem.get(0).getMails().get(0));
-		Assertions.assertEquals(2, tableItem.get(0).getGroups().size());
-		Assertions.assertTrue(tableItem.get(0).getGroups().contains("biz agency"));
-		Assertions.assertTrue(tableItem.get(0).getGroups().contains("dig rha"));
+		Assertions.assertEquals("ing", tableItem.getFirst().getCompany());
+		Assertions.assertEquals("First2", tableItem.getFirst().getFirstName());
+		Assertions.assertEquals("Doe2", tableItem.getFirst().getLastName());
+		Assertions.assertEquals("first2.doe2@ing.fr", tableItem.getFirst().getMails().getFirst());
+		Assertions.assertEquals(2, tableItem.getFirst().getGroups().size());
+		Assertions.assertTrue(tableItem.getFirst().getGroups().contains("biz agency"));
+		Assertions.assertTrue(tableItem.getFirst().getGroups().contains("dig rha"));
 	}
 
 	@Test
@@ -184,7 +170,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		// My company
 		// [SimpleUser(id=jdoe4), SimpleUser(id=hdurant), SimpleUser(id=fdoe2),
 		// SimpleUser(id=fdauganb)]
-		Assertions.assertEquals("jdoe4", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("jdoe4", tableItem.getData().getFirst().getId());
 		Assertions.assertEquals("hdurant", tableItem.getData().get(1).getId());
 		Assertions.assertEquals("fdoe2", tableItem.getData().get(3).getId());
 
@@ -225,12 +211,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(15, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("admin-test", tableItem.getData().get(0).getId());
-		Assertions.assertFalse(tableItem.getData().get(0).isCanWrite());
+		Assertions.assertEquals("admin-test", tableItem.getData().getFirst().getId());
+		Assertions.assertFalse(tableItem.getData().getFirst().isCanWrite());
 
 		// Check the groups
-		Assertions.assertEquals(1, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("ligoj-Jupiter", tableItem.getData().get(0).getGroups().get(0).getName());
+		Assertions.assertEquals(1, tableItem.getData().getFirst().getGroups().size());
+		Assertions.assertEquals("ligoj-Jupiter", tableItem.getData().getFirst().getGroups().getFirst().getName());
 	}
 
 	/**
@@ -245,11 +231,11 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(9, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
-		Assertions.assertTrue(tableItem.getData().get(0).isCanWrite());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
+		Assertions.assertTrue(tableItem.getData().getFirst().isCanWrite());
 
 		// Check the groups
-		Assertions.assertEquals(0, tableItem.getData().get(0).getGroups().size());
+		Assertions.assertEquals(0, tableItem.getData().getFirst().getGroups().size());
 	}
 
 	/**
@@ -265,11 +251,11 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(8, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
-		Assertions.assertTrue(tableItem.getData().get(0).isCanWrite());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
+		Assertions.assertTrue(tableItem.getData().getFirst().isCanWrite());
 
 		// Check the groups
-		Assertions.assertEquals(0, tableItem.getData().get(0).getGroups().size());
+		Assertions.assertEquals(0, tableItem.getData().getFirst().getGroups().size());
 	}
 
 	/**
@@ -287,9 +273,9 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(5, tableItem.getData().size());
 
 		// Check the users (from delegate)
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
-		Assertions.assertFalse(tableItem.getData().get(0).isCanWrite());
-		Assertions.assertTrue(tableItem.getData().get(0).isCanWriteGroups());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
+		Assertions.assertFalse(tableItem.getData().getFirst().isCanWrite());
+		Assertions.assertTrue(tableItem.getData().getFirst().isCanWriteGroups());
 	}
 
 	/**
@@ -305,17 +291,17 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
-		Assertions.assertFalse(tableItem.getData().get(0).isCanWrite());
-		Assertions.assertTrue(tableItem.getData().get(0).isCanWriteGroups());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
+		Assertions.assertFalse(tableItem.getData().getFirst().isCanWrite());
+		Assertions.assertTrue(tableItem.getData().getFirst().isCanWriteGroups());
 
 		// Check the groups
 		// "Biz Agency" is visible since "mmartin" is in the parent group "
-		Assertions.assertEquals(2, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("Biz Agency", tableItem.getData().get(0).getGroups().get(0).getName());
-		Assertions.assertTrue(tableItem.getData().get(0).getGroups().get(0).isCanWrite());
-		Assertions.assertEquals("DIG RHA", tableItem.getData().get(0).getGroups().get(1).getName());
-		Assertions.assertFalse(tableItem.getData().get(0).getGroups().get(1).isCanWrite());
+		Assertions.assertEquals(2, tableItem.getData().getFirst().getGroups().size());
+		Assertions.assertEquals("Biz Agency", tableItem.getData().getFirst().getGroups().getFirst().getName());
+		Assertions.assertTrue(tableItem.getData().getFirst().getGroups().getFirst().isCanWrite());
+		Assertions.assertEquals("DIG RHA", tableItem.getData().getFirst().getGroups().get(1).getName());
+		Assertions.assertFalse(tableItem.getData().getFirst().getGroups().get(1).isCanWrite());
 	}
 
 	@Test
@@ -329,7 +315,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(15, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
 	}
 
 	@Test
@@ -340,8 +326,8 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(16, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("flast0", tableItem.getData().get(0).getId());
-		Assertions.assertEquals("socygan", tableItem.getData().get(0).getCompany());
+		Assertions.assertEquals("flast0", tableItem.getData().getFirst().getId());
+		Assertions.assertEquals("socygan", tableItem.getData().getFirst().getCompany());
 		Assertions.assertEquals("fdaugan", tableItem.getData().get(6).getId());
 		Assertions.assertEquals("ligoj", tableItem.getData().get(6).getCompany());
 	}
@@ -369,7 +355,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("mmartin", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("mmartin", tableItem.getData().getFirst().getId());
 	}
 
 	/**
@@ -398,13 +384,13 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getData().size());
 
 		// Check the users
-		Assertions.assertEquals("fdoe2", tableItem.getData().get(0).getId());
-		Assertions.assertFalse(tableItem.getData().get(0).isCanWrite());
+		Assertions.assertEquals("fdoe2", tableItem.getData().getFirst().getId());
+		Assertions.assertFalse(tableItem.getData().getFirst().isCanWrite());
 
 		// Check the groups
-		Assertions.assertEquals(1, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("Biz Agency", tableItem.getData().get(0).getGroups().get(0).getName());
-		Assertions.assertFalse(tableItem.getData().get(0).getGroups().get(0).isCanWrite());
+		Assertions.assertEquals(1, tableItem.getData().getFirst().getGroups().size());
+		Assertions.assertEquals("Biz Agency", tableItem.getData().getFirst().getGroups().getFirst().getName());
+		Assertions.assertFalse(tableItem.getData().getFirst().getGroups().getFirst().isCanWrite());
 	}
 
 	/**
@@ -500,14 +486,14 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		final var user = tableItem.getData().get(0);
+		final var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("flast1", user.getId());
 		Assertions.assertEquals("Firsta", user.getFirstName());
 		Assertions.assertEquals("Lasta", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("flasta@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("flasta@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(1, user.getGroups().size());
-		Assertions.assertEquals("DIG RHA", user.getGroups().get(0).getName());
+		Assertions.assertEquals("DIG RHA", user.getGroups().getFirst().getName());
 
 		// Rollback attributes
 		userEdit.setId("flast1");
@@ -536,12 +522,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		var user = tableItem.getData().get(0);
+		var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("jlast3", user.getId());
 		Assertions.assertEquals("John31", user.getFirstName());
 		Assertions.assertEquals("Last3", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("john3.last3@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("john3.last3@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(0, user.getGroups().size());
 		rollbackUser();
 	}
@@ -562,12 +548,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		var user = tableItem.getData().get(0);
+		var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("jlast3", user.getId());
 		Assertions.assertEquals("John31", user.getFirstName());
 		Assertions.assertEquals("Last31", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("john3.last3@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("john3.last3@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(1, user.getGroups().size());
 		rollbackUser();
 	}
@@ -588,12 +574,12 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		final var user = tableItem.getData().get(0);
+		final var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("jlast3", user.getId());
 		Assertions.assertEquals("John31", user.getFirstName());
 		Assertions.assertEquals("Last31", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("john31.last31@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("john31.last31@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(1, user.getGroups().size());
 		rollbackUser();
 	}
@@ -617,7 +603,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		// Check the new DN and company everywhere
 		Assertions.assertEquals("uid=flast0,ou=ing,ou=external,ou=people,dc=sample,dc=com", toDn(getContext("flast0")));
 		Assertions.assertEquals("ing",
-				resource.findAll(null, null, "flast0", newUriInfo()).getData().get(0).getCompany());
+				resource.findAll(null, null, "flast0", newUriInfo()).getData().getFirst().getCompany());
 		Assertions.assertEquals("ing", getUser().findByIdNoCache("flast0").getCompany());
 		Assertions.assertEquals("ing", getUser().findById("flast0").getCompany());
 
@@ -628,7 +614,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("uid=flast0,ou=socygan,ou=external,ou=people,dc=sample,dc=com",
 				toDn(getContext("flast0")));
 		Assertions.assertEquals("socygan",
-				resource.findAll(null, null, "flast0", newUriInfo()).getData().get(0).getCompany());
+				resource.findAll(null, null, "flast0", newUriInfo()).getData().getFirst().getCompany());
 		Assertions.assertEquals("socygan", getUser().findByIdNoCache("flast0").getCompany());
 		Assertions.assertEquals("socygan", getUser().findById("flast0").getCompany());
 	}
@@ -680,14 +666,14 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		final var user = tableItem.getData().get(0);
+		final var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("jlast3", user.getId());
 		Assertions.assertEquals("John3", user.getFirstName());
 		Assertions.assertEquals("Last3", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("jlast3@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("jlast3@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(1, user.getGroups().size());
-		Assertions.assertEquals("DIG RHA", user.getGroups().get(0).getName());
+		Assertions.assertEquals("DIG RHA", user.getGroups().getFirst().getName());
 	}
 
 	@Test
@@ -810,16 +796,16 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		final var initialResultsFromUpdater = resource.findAll(null, null, "wuser",
 				newUriInfoAsc("id"));
 		Assertions.assertEquals(1, initialResultsFromUpdater.getRecordsTotal());
-		Assertions.assertEquals(1, initialResultsFromUpdater.getData().get(0).getGroups().size());
+		Assertions.assertEquals(1, initialResultsFromUpdater.getData().getFirst().getGroups().size());
 		Assertions.assertEquals("Biz Agency Manager",
-				initialResultsFromUpdater.getData().get(0).getGroups().get(0).getName());
+				initialResultsFromUpdater.getData().getFirst().getGroups().getFirst().getName());
 
 		// Pre-condition, check the user "wuser", has no group visible by
 		// "assist"
 		initSpringSecurityContext("assist");
 		final var assisteResult = resource.findAll(null, null, "wuser", newUriInfoAsc("id"));
 		Assertions.assertEquals(1, assisteResult.getRecordsTotal());
-		Assertions.assertEquals(0, assisteResult.getData().get(0).getGroups().size());
+		Assertions.assertEquals(0, assisteResult.getData().getFirst().getGroups().size());
 
 		// Pre-condition, check the user "wuser", "Biz Agency Manager" is not
 		// visible by "mtuyer"
@@ -827,7 +813,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		final var usersFromOtherGroupManager = resource.findAll(null, null, "wuser",
 				newUriInfoAsc("id"));
 		Assertions.assertEquals(1, usersFromOtherGroupManager.getRecordsTotal());
-		Assertions.assertEquals(0, usersFromOtherGroupManager.getData().get(0).getGroups().size());
+		Assertions.assertEquals(0, usersFromOtherGroupManager.getData().getFirst().getGroups().size());
 
 		// Add a new valid group "DIG RHA" to "wuser" by "fdaugan"
 		initSpringSecurityContext("fdaugan");
@@ -848,15 +834,15 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsTotal());
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
-		Assertions.assertEquals(2, tableItem.getData().get(0).getGroups().size());
-		Assertions.assertEquals("Biz Agency Manager", tableItem.getData().get(0).getGroups().get(0).getName());
-		Assertions.assertEquals("DIG RHA", tableItem.getData().get(0).getGroups().get(1).getName());
+		Assertions.assertEquals(2, tableItem.getData().getFirst().getGroups().size());
+		Assertions.assertEquals("Biz Agency Manager", tableItem.getData().getFirst().getGroups().getFirst().getName());
+		Assertions.assertEquals("DIG RHA", tableItem.getData().getFirst().getGroups().get(1).getName());
 
 		// Check the user "wuser", still has no group visible by "assist"
 		initSpringSecurityContext("assist");
 		final var assisteResult2 = resource.findAll(null, null, "wuser", newUriInfoAsc("id"));
 		Assertions.assertEquals(1, assisteResult2.getRecordsTotal());
-		Assertions.assertEquals(0, assisteResult2.getData().get(0).getGroups().size());
+		Assertions.assertEquals(0, assisteResult2.getData().getFirst().getGroups().size());
 
 		// Check the user "wuser", still has the group "DIG RHA" visible by
 		// "mtuyer"
@@ -864,7 +850,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		final var usersFromOtherGroupManager2 = resource.findAll(null, null, "wuser",
 				newUriInfoAsc("id"));
 		Assertions.assertEquals(1, usersFromOtherGroupManager2.getRecordsTotal());
-		Assertions.assertEquals("DIG RHA", usersFromOtherGroupManager2.getData().get(0).getGroups().get(0).getName());
+		Assertions.assertEquals("DIG RHA", usersFromOtherGroupManager2.getData().getFirst().getGroups().getFirst().getName());
 
 		// Restore the old state
 		initSpringSecurityContext("fdaugan");
@@ -881,9 +867,9 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		final var initialResultsFromUpdater2 = resource.findAll(null, null, "wuser",
 				newUriInfoAsc("id"));
 		Assertions.assertEquals(1, initialResultsFromUpdater2.getRecordsTotal());
-		Assertions.assertEquals(1, initialResultsFromUpdater2.getData().get(0).getGroups().size());
+		Assertions.assertEquals(1, initialResultsFromUpdater2.getData().getFirst().getGroups().size());
 		Assertions.assertEquals("Biz Agency Manager",
-				initialResultsFromUpdater2.getData().get(0).getGroups().get(0).getName());
+				initialResultsFromUpdater2.getData().getFirst().getGroups().getFirst().getName());
 	}
 
 	/**
@@ -963,7 +949,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(7, tableItem.getRecordsFiltered());
 
 		// Check the users
-		Assertions.assertEquals("admin-test", tableItem.getData().get(0).getId());
+		Assertions.assertEquals("admin-test", tableItem.getData().getFirst().getId());
 	}
 
 	/**
@@ -995,24 +981,6 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		getUser().findAll();
 	}
 
-	/**
-	 * Check the result : expects one entry
-	 */
-	protected void checkResult(final TableItem<UserOrgVo> tableItem) {
-		Assertions.assertEquals(1, tableItem.getRecordsTotal());
-		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
-		Assertions.assertEquals(1, tableItem.getData().size());
-
-		final var user = tableItem.getData().get(0);
-		Assertions.assertEquals("flasta", user.getId());
-		Assertions.assertEquals("Firsta", user.getFirstName());
-		Assertions.assertEquals("Lasta", user.getLastName());
-		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("flasta@ing.com", user.getMails().get(0));
-		Assertions.assertEquals(1, user.getGroups().size());
-		Assertions.assertEquals("DIG RHA", user.getGroups().get(0).getName());
-	}
-
 	@Override
 	protected UriInfo newUriInfoAsc(final String ascProperty) {
 		final var uriInfo = newUriInfo();
@@ -1039,7 +1007,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals("Fabrice", user.getFirstName());
 		Assertions.assertEquals("Daugan", user.getLastName());
 		Assertions.assertEquals("ligoj", user.getCompany());
-		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().get(0));
+		Assertions.assertEquals("fabrice.daugan@sample.com", user.getMails().getFirst());
 		Assertions.assertEquals(1, user.getGroups().size());
 		Assertions.assertEquals("Hub Paris", user.getGroups().iterator().next());
 	}
@@ -1059,111 +1027,21 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		Assertions.assertEquals(1, tableItem.getRecordsFiltered());
 		Assertions.assertEquals(1, tableItem.getData().size());
 
-		var user = tableItem.getData().get(0);
+		var user = tableItem.getData().getFirst();
 		Assertions.assertEquals("jlast3", user.getId());
 		Assertions.assertEquals("John3", user.getFirstName());
 		Assertions.assertEquals("Last3", user.getLastName());
 		Assertions.assertEquals("ing", user.getCompany());
-		Assertions.assertEquals("john3.last3@ing.com", user.getMails().get(0));
+		Assertions.assertEquals("john3.last3@ing.com", user.getMails().getFirst());
 		Assertions.assertEquals(0, user.getGroups().size());
 	}
 
-	protected CacheUser getContext(final String base, final String uid) {
-		return cacheUserRepository.findOneExpected(uid);
-	}
-
 	protected CacheUser getContext(final String uid) {
-		return getContext("dc=sample,dc=com", uid);
-	}
-
-	/**
-	 * Check the DN and uniqueMember is updated for the related groups
-	 */
-	protected void checkDnAndMember(final CacheUser context, final String dn) {
-		// Check the DN is restored
-		Assertions.assertEquals(dn, toDn(context));
-
-		// Check the uniqueMember is restored for the related groups
-		checkMember(dn);
+		return cacheUserRepository.findOneExpected(uid);
 	}
 
 	private String toDn(final CacheUser context) {
 		return "uid=" + context.getId() + "," + context.getCompany().getDescription();
-	}
-
-	/**
-	 * Check the uniqueMember is updated for the related groups
-	 */
-	protected void checkMember(final String dn) {
-		var group = cacheGroupRepository.findByNameExpected("ligoj-Jupiter");
-		var members = cacheMembershipRepository.findAllBy("group", group);
-		Assertions.assertEquals(1, members.size());
-		Assertions.assertEquals(dn, members.get(0).getGroup().getDescription());
-	}
-
-	protected CacheUser checkUnlockedBefore() {
-		initSpringSecurityContext(DEFAULT_USER);
-
-		// Restore lock status from SQL
-		final var credential = credentialRepository.findBy("user.id", "admin-test");
-		credential.setValue("secret");
-		credential.setLocked(null);
-		credential.setLockedBy(null);
-		credential.setIsolated(null);
-		credential.setSalt(null);
-		credentialRepository.save(credential);
-
-		// Asserts
-		final CacheUser result = checkUnlocked();
-		Assertions.assertNull(credentialRepository.findBy("user", result).getValue());
-		return result;
-	}
-
-	protected CacheUser checkUnlockedAfter() {
-		final var result = checkUnlocked();
-		Assertions.assertNull(credentialRepository.findBy("user", result).getValue());
-		return result;
-	}
-
-	protected CacheUser checkUnlocked() {
-		assertUnlocked(resource.findAll("ligoj", null, "admin-test", newUriInfo()).getData().get(0));
-		assertUnlocked(getUser().findByIdNoCache("admin-test"));
-		assertUnlocked(getUser().findById("admin-test"));
-		Assertions.assertTrue(getGroup().findAll().get("ligoj-jupiter").getMembers().contains("admin-test"));
-
-		final var result = getContext("admin-test");
-		Assertions.assertNull(credentialRepository.findBy("user", result).getLocked());
-		return result;
-	}
-
-	protected CacheUser check(final String company, final String base, final String patternLocked,
-			final Consumer<SimpleUserOrg> checker) {
-		// Check the status at business layer
-		checker.accept(resource.findAll(company, null, "admin-test", newUriInfo()).getData().get(0));
-		checker.accept(resource.findById("admin-test"));
-
-		// Check the status at cache layer
-		Assertions.assertTrue(getGroup().findAll().get("ligoj-jupiter").getMembers().contains("admin-test"));
-		checker.accept(getUser().findByIdNoCache("admin-test"));
-
-		// Check in the status in the SQL
-		final var result = getContext(base, "admin-test");
-
-		Assertions.assertNull(credentialRepository.findBy("user", result).getValue());
-		Assertions.assertNotNull(credentialRepository.findBy("user", result).getLocked());
-		Assertions.assertEquals("junit", credentialRepository.findBy("user", result).getLockedBy());
-		return result;
-	}
-
-	protected void assertLocked(final SimpleUserOrg user) {
-		Assertions.assertNotNull(user.getLocked());
-		Assertions.assertEquals("junit", user.getLockedBy());
-	}
-
-	protected void assertUnlocked(final SimpleUserOrg user) {
-		Assertions.assertNull(user.getLocked());
-		Assertions.assertNull(user.getLockedBy());
-		Assertions.assertNull(user.getIsolated());
 	}
 
 	protected void checkRawUser(final SimpleUserOrg user) {
