@@ -6,7 +6,6 @@ package org.ligoj.app.plugin.id.sql.dao;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -288,35 +287,6 @@ public class UserSqlRepository implements IUserRepository {
 				|| StringUtils.containsIgnoreCase(userSql.getLastName(), criteria)
 				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria)
 				|| !userSql.getMails().isEmpty() && StringUtils.containsIgnoreCase(userSql.getMails().getFirst(), criteria);
-	}
-
-	@Override
-	public void updateMembership(final Collection<String> groups, final UserOrg user) {
-		// Add new groups
-		addUserToGroups(user, CollectionUtils.subtract(groups, user.getGroups()));
-
-		// Remove old groups
-		removeUserFromGroups(user, CollectionUtils.subtract(user.getGroups(), groups));
-	}
-
-	/**
-	 * Add the user from the given groups. Cache is also updated.
-	 *
-	 * @param user   The user to add to the given groups.
-	 * @param groups the groups to add, normalized.
-	 */
-	protected void addUserToGroups(final UserOrg user, final Collection<String> groups) {
-		groups.forEach(g -> groupRepository.addUser(user, g));
-	}
-
-	/**
-	 * Remove the user from the given groups.Cache is also updated.
-	 *
-	 * @param user   The user to remove from the given groups.
-	 * @param groups the groups to remove, normalized.
-	 */
-	protected void removeUserFromGroups(final UserOrg user, final Collection<String> groups) {
-		groups.forEach(g -> groupRepository.removeUser(user, g));
 	}
 
 	@Override
