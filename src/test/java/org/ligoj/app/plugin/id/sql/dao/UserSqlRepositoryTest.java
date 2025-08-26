@@ -26,7 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Test class of {@link UserSqlRepository}
@@ -238,7 +238,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 	@Test
 	void lockAlreadyLocked() {
 		final var cacheUser = newUser();
-		cacheUser.setLocked(new Date());
+		cacheUser.setLocked(Instant.now());
 		cacheUser.setLockedBy("someone");
 		repository.lock("fdaugan", cacheUser);
 		final var user = credentialRepository.findBy("user.id", "jdoe4");
@@ -308,7 +308,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 	@Test
 	void unlock() {
 		final var user = newUser();
-		user.setLocked(new Date());
+		user.setLocked(Instant.now());
 		user.setLockedBy("some");
 
 		repository.unlock(user);

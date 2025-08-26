@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.ligoj.app.api.Normalizer;
 import org.ligoj.app.iam.ContainerOrg;
 import org.ligoj.app.iam.IContainerRepository;
@@ -77,7 +78,7 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 			final Map<String, Comparator<T>> customComparators) {
 		// Create the set with the right comparator
 		final List<Sort.Order> orders = IteratorUtils
-				.toList(ObjectUtils.defaultIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
+				.toList(ObjectUtils.getIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
 		orders.add(DEFAULT_ORDER);
 		final Sort.Order order = orders.getFirst();
 		Comparator<T> comparator = customComparators.get(order.getProperty());
@@ -88,7 +89,7 @@ public abstract class AbstractContainerSqlRepository<T extends ContainerOrg, C e
 
 		// Filter the containers, filtering by the criteria
 		containers.stream()
-				.filter(c -> StringUtils.isEmpty(criteria) || StringUtils.containsIgnoreCase(c.getName(), criteria))
+				.filter(c -> StringUtils.isEmpty(criteria) || Strings.CI.contains(c.getName(), criteria))
 				.forEach(result::add);
 
 		// Apply in-memory pagination

@@ -10,6 +10,7 @@ import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.app.iam.*;
 import org.ligoj.app.iam.dao.CacheUserRepository;
@@ -18,7 +19,6 @@ import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
 import org.ligoj.app.plugin.id.model.*;
 import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
 import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
-import org.ligoj.bootstrap.core.DateUtils;
 import org.ligoj.bootstrap.core.json.InMemoryPagination;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
@@ -35,6 +35,7 @@ import javax.naming.ldap.LdapName;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -57,7 +58,7 @@ public class UserSqlRepository implements IUserRepository {
 	 * Shared random string generator used for temporary passwords.
 	 */
 	public static final RandomStringGenerator GENERATOR = new RandomStringGenerator.Builder()
-			.filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).build();
+			.filteredBy(c -> CharUtils.isAsciiAlphanumeric(Character.toChars(c)[0])).get();
 
 	/**
 	 * Base DN for internal people. Should be a subset of people DN.
@@ -222,10 +223,10 @@ public class UserSqlRepository implements IUserRepository {
 			final String criteria, final Pageable pageable) {
 		// Create the set with the right comparator
 		final List<Sort.Order> orders = IteratorUtils
-				.toList(ObjectUtils.defaultIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
+				.toList(ObjectUtils.getIfNull(pageable.getSort(), new ArrayList<Sort.Order>()).iterator());
 		orders.add(DEFAULT_ORDER);
 		final Sort.Order order = orders.getFirst();
-		Comparator<UserOrg> comparator = ObjectUtils.defaultIfNull(COMPARATORS.get(order.getProperty()),
+		Comparator<UserOrg> comparator = ObjectUtils.getIfNull(COMPARATORS.get(order.getProperty()),
 				DEFAULT_COMPARATOR);
 		if (order.getDirection() == Direction.DESC) {
 			comparator = Collections.reverseOrder(comparator);
@@ -283,10 +284,10 @@ public class UserSqlRepository implements IUserRepository {
 	 * Indicates the given user match to the given pattern.
 	 */
 	private boolean matchPattern(final UserOrg userSql, final String criteria) {
-		return StringUtils.containsIgnoreCase(userSql.getFirstName(), criteria)
-				|| StringUtils.containsIgnoreCase(userSql.getLastName(), criteria)
-				|| StringUtils.containsIgnoreCase(userSql.getId(), criteria)
-				|| !userSql.getMails().isEmpty() && StringUtils.containsIgnoreCase(userSql.getMails().getFirst(), criteria);
+		return Strings.CI.contains(userSql.getFirstName(), criteria)
+				|| Strings.CI.contains(userSql.getLastName(), criteria)
+				|| Strings.CI.contains(userSql.getId(), criteria)
+				|| !userSql.getMails().isEmpty() && Strings.CI.contains(userSql.getMails().getFirst(), criteria);
 	}
 
 	@Override
@@ -358,7 +359,7 @@ public class UserSqlRepository implements IUserRepository {
 		if (user.getLockedBy() == null) {
 			// Not yet locked
 			final UserSqlCredential credential = createAsNeeded(user);
-			credential.setLocked(DateUtils.newCalendar().getTime());
+			credential.setLocked(Instant.now());
 			credential.setLockedBy(principal);
 			credential.setValue(null);
 			credential.setSalt(null);

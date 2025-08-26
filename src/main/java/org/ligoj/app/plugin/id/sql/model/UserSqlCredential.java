@@ -3,21 +3,17 @@
  */
 package org.ligoj.app.plugin.id.sql.model;
 
-import java.util.Date;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.bootstrap.core.model.AbstractPersistable;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.Instant;
 
 /**
  * IAM User cache.
@@ -50,8 +46,7 @@ public class UserSqlCredential extends AbstractPersistable<Integer> {
 	/**
 	 * When not <code>null</code>, this user is locked and the date corresponds to the moment.
 	 */
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date locked;
+	private Instant locked;
 
 	/**
 	 * User principal identifier locking this user.
