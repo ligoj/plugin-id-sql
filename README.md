@@ -1,4 +1,4 @@
-## :link: Ligoj Identity SQL plugin [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.ligoj.plugin/plugin-id-sql/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.ligoj.plugin/plugin-id-sql) [![Download](https://api.bintray.com/packages/ligoj/maven-repo/plugin-id-sql/images/download.svg) ](https://bintray.com/ligoj/maven-repo/plugin-id-sql/_latestVersion)
+## :link: Ligoj Identity SQL plugin ![Maven Central](https://img.shields.io/maven-central/v/org.ligoj.plugin/plugin-id-sql)
 
 [![Build Status](https://app.travis-ci.com/github/ligoj/plugin-id-sql.svg?branch=master)](https://app.travis-ci.com/github/ligoj/plugin-id-sql)
 [![Build Status](https://circleci.com/gh/ligoj/plugin-id-sql.svg?style=svg)](https://circleci.com/gh/ligoj/plugin-id-sql)
