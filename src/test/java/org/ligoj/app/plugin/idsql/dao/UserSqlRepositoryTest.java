@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.dao;
+package org.ligoj.app.plugin.idsql.dao;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +13,7 @@ import org.ligoj.app.iam.UserOrg;
 import org.ligoj.app.iam.model.*;
 import org.ligoj.app.model.*;
 import org.ligoj.app.plugin.id.model.ContainerScope;
-import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
+import org.ligoj.app.plugin.idsql.model.UserSqlCredential;
 import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.resource.TechnicalException;

@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.resource;
+package org.ligoj.app.plugin.idsql.resource;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -13,9 +13,9 @@ import org.ligoj.app.model.Parameter;
 import org.ligoj.app.model.ParameterValue;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.model.Subscription;
-import org.ligoj.app.plugin.id.sql.dao.CompanySqlRepository;
-import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
-import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.CompanySqlRepository;
+import org.ligoj.app.plugin.idsql.dao.GroupSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.UserSqlRepository;
 
 /**
  * Test for SQL resources.

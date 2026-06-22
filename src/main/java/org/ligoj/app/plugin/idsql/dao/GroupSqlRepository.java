@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.dao;
+package org.ligoj.app.plugin.idsql.dao;
 
 import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.IGroupRepository;

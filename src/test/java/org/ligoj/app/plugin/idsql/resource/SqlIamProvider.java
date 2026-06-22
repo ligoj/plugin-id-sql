@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.resource;
+package org.ligoj.app.plugin.idsql.resource;
 
 import java.util.Optional;
 
@@ -9,7 +9,6 @@ import javax.cache.annotation.CacheResult;
 
 import org.ligoj.app.iam.IamConfiguration;
 import org.ligoj.app.iam.IamProvider;
-import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;

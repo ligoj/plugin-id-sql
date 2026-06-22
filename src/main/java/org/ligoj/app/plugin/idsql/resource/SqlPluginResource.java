@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.resource;
+package org.ligoj.app.plugin.idsql.resource;
 
 import jakarta.transaction.Transactional;
 import jakarta.transaction.Transactional.TxType;
@@ -14,14 +14,15 @@ import org.ligoj.app.api.Normalizer;
 import org.ligoj.app.api.SubscriptionStatusWithData;
 import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.IamProvider;
+import org.ligoj.app.iam.UserOrg;
 import org.ligoj.app.model.CacheProjectGroup;
 import org.ligoj.app.model.ContainerType;
 import org.ligoj.app.model.Project;
 import org.ligoj.app.plugin.id.dao.CacheProjectGroupRepository;
 import org.ligoj.app.plugin.id.model.ContainerScope;
 import org.ligoj.app.plugin.id.resource.*;
-import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
-import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.GroupSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.UserSqlRepository;
 import org.ligoj.app.resource.ServicePluginLocator;
 import org.ligoj.bootstrap.core.INamableBean;
 import org.ligoj.bootstrap.core.NamedBean;
@@ -363,4 +364,15 @@ public class SqlPluginResource extends AbstractPluginIdResource<UserSqlRepositor
 	private GroupSqlRepository getGroup() {
 		return (GroupSqlRepository) iamProvider[0].getConfiguration().getGroupRepository();
 	}
+
+	/**
+	 * Generate an application login from an account.
+	 *
+	 * @param account The current authenticated account in this security provider.
+	 * @return a corresponding application login candidate from an account.
+	 */
+	protected String toLogin(final UserOrg account) {
+		return super.toLogin(account);
+	}
+
 }

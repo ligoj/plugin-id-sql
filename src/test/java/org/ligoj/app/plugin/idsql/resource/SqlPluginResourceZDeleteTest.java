@@ -1,14 +1,14 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.resource;
+package org.ligoj.app.plugin.idsql.resource;
 
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.app.model.Subscription;
-import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.GroupSqlRepository;
 
 /**
  * Test class of {@link SqlPluginResource}

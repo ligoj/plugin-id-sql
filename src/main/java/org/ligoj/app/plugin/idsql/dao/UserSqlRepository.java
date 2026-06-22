@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.dao;
+package org.ligoj.app.plugin.idsql.dao;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +17,8 @@ import org.ligoj.app.iam.dao.CacheUserRepository;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
 import org.ligoj.app.plugin.id.model.*;
-import org.ligoj.app.plugin.id.sql.model.UserSqlCredential;
-import org.ligoj.app.plugin.id.sql.resource.SqlPluginResource;
+import org.ligoj.app.plugin.idsql.model.UserSqlCredential;
+import org.ligoj.app.plugin.idsql.resource.SqlPluginResource;
 import org.ligoj.bootstrap.core.json.InMemoryPagination;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;

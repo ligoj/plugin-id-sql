@@ -1,7 +1,7 @@
 /*
  * Licensed under MIT (https://github.com/ligoj/ligoj/blob/master/LICENSE)
  */
-package org.ligoj.app.plugin.id.sql.resource;
+package org.ligoj.app.plugin.idsql.resource;
 
 import jakarta.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.Assertions;
@@ -15,8 +15,8 @@ import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.iam.model.DelegateOrg;
 import org.ligoj.app.plugin.id.resource.UserOrgEditionVo;
 import org.ligoj.app.plugin.id.resource.UserOrgResource;
-import org.ligoj.app.plugin.id.sql.dao.GroupSqlRepository;
-import org.ligoj.app.plugin.id.sql.dao.UserSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.GroupSqlRepository;
+import org.ligoj.app.plugin.idsql.dao.UserSqlRepository;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.resource.BusinessException;
