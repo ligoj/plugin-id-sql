@@ -18,7 +18,6 @@ import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,6 +26,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test class of {@link UserSqlRepository}
@@ -110,7 +112,7 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 				return user;
 			}
 		};
-		repository.setCompanyRepository(Mockito.mock(CompanySqlRepository.class));
+		repository.setCompanyRepository(mock(CompanySqlRepository.class));
 		MatcherUtil.assertThrows(Assertions.assertThrows(ValidationJsonException.class, () -> repository.findByIdExpected("user1", "user2")), "id", "unknown-id");
 	}
 
@@ -125,8 +127,8 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 				return user;
 			}
 		};
-		var mock = Mockito.mock(CompanySqlRepository.class);
-		Mockito.when(mock.findById("user1", "company")).thenReturn(new CompanyOrg("", ""));
+		var mock = mock(CompanySqlRepository.class);
+		when(mock.findById("user1", "company")).thenReturn(new CompanyOrg("", ""));
 		repository.setCompanyRepository(mock);
 		repository.findByIdExpected("user1", "user2");
 	}

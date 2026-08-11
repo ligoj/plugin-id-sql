@@ -78,7 +78,7 @@ public class SqlPluginResourceZDeleteTest extends AbstractSqlPluginResourceTest 
 		Assertions.assertTrue(getGroup().findAll().get("sea-parent-for-2deletion").getSubGroups().isEmpty());
 		Assertions.assertNull(getGroup().findAll().get("sea-parent-for-2deletion-sub"));
 		Assertions.assertEquals("sea-parent-for-2deletion", resource.findGroupsByName("sea-parent-for-2deletion").getFirst().getId());
-		Assertions.assertNull(((GroupSqlRepository) getGroup()).findAllNoCache().get("sea-parent-for-2deletion-sub"));
+		Assertions.assertNull(getGroup().findAllNoCache().get("sea-parent-for-2deletion-sub"));
 
 		// Check the new status of the deleted child
 		Assertions.assertFalse(resource.checkSubscriptionStatus(childParameters).getStatus().isUp());
@@ -89,6 +89,6 @@ public class SqlPluginResourceZDeleteTest extends AbstractSqlPluginResourceTest 
 		Assertions.assertNull(getGroup().findAll().get("sea-parent-for-2deletion"));
 
 		// Check the SQL content
-		Assertions.assertNull(((GroupSqlRepository) getGroup()).findAllNoCache().get("sea-parent-for-2deletion"));
+		Assertions.assertNull(getGroup().findAllNoCache().get("sea-parent-for-2deletion"));
 	}
 }

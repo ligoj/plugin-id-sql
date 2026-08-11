@@ -3,11 +3,7 @@
  */
 package org.ligoj.app.plugin.idsql.dao;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jakarta.transaction.Transactional;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,11 +11,16 @@ import org.ligoj.app.iam.GroupOrg;
 import org.ligoj.app.iam.UserOrg;
 import org.ligoj.bootstrap.AbstractDataGeneratorTest;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test class of {@link GroupSqlRepository}
@@ -40,11 +41,11 @@ class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 			}
 
 		};
-		final CacheSqlRepository cacheRepository = Mockito.mock(CacheSqlRepository.class);
+		final CacheSqlRepository cacheRepository = mock(CacheSqlRepository.class);
 		groupRepository.setRepository(cacheRepository);
 		addUser(groupRepository);
 
-		Mockito.verify(cacheRepository, VerificationModeFactory.times(1))
+		verify(cacheRepository, VerificationModeFactory.times(1))
 				.addUserToGroup(ArgumentMatchers.any(UserOrg.class), ArgumentMatchers.any(GroupOrg.class));
 	}
 
@@ -58,7 +59,7 @@ class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 			}
 
 		};
-		final CacheSqlRepository cacheRepository = Mockito.mock(CacheSqlRepository.class);
+		final CacheSqlRepository cacheRepository = mock(CacheSqlRepository.class);
 		groupRepository.setRepository(cacheRepository);
 		addUser(groupRepository);
 
@@ -92,7 +93,7 @@ class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 			}
 
 		};
-		groupRepository.setRepository(Mockito.mock(CacheSqlRepository.class));
+		groupRepository.setRepository(mock(CacheSqlRepository.class));
 		return groupRepository;
 	}
 
@@ -120,7 +121,7 @@ class GroupSqlRepositoryTest extends AbstractDataGeneratorTest {
 	@Test
 	void empty() {
 		GroupSqlRepository repository = new GroupSqlRepository();
-		repository.setRepository(Mockito.mock(CacheSqlRepository.class));
+		repository.setRepository(mock(CacheSqlRepository.class));
 		repository.empty(null, null);
 	}
 

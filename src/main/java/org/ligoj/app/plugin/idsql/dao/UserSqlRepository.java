@@ -64,7 +64,7 @@ public class UserSqlRepository implements IUserRepository {
 	 * Base DN for internal people. Should be a subset of people DN.
 	 */
 	@Getter
-	private String peopleInternalBaseDn = "ou=internal,ou=people";
+	private final String peopleInternalBaseDn = "ou=internal,ou=people";
 
 	/**
 	 * Salt string length used to build the credential hash.

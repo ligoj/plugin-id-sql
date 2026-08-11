@@ -21,13 +21,14 @@ import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.json.datatable.DataTableAttributes;
 import org.ligoj.bootstrap.core.resource.BusinessException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Test of {@link UserOrgResource} Delegate
@@ -862,8 +863,8 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 		user2.setMail("wuser.wuser@ing.fr");
 		final var groups2 = new ArrayList<String>();
 		groups2.add("Biz Agency Manager");
-		user.setGroups(groups2);
-		resource.update(user);
+		user2.setGroups(groups2);
+		resource.update(user2);
 		final var initialResultsFromUpdater2 = resource.findAll(null, null, "wuser",
 				newUriInfoAsc("id"));
 		Assertions.assertEquals(1, initialResultsFromUpdater2.getRecordsTotal());
@@ -904,7 +905,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	@Test
 	void updateMembership() {
 		final var repository = new UserSqlRepository();
-		repository.setGroupRepository(Mockito.mock(GroupSqlRepository.class));
+		repository.setGroupRepository(mock(GroupSqlRepository.class));
 		final var groups = new ArrayList<String>();
 		groups.add("dig rha");
 		final var user = new UserOrg();
@@ -965,7 +966,7 @@ class UserSqlResourceTest extends AbstractSqlPluginResourceTest {
 	@Test
 	void setIamProviderForTest() {
 		// There, for test by other plugin/application
-		new UserOrgResource().setIamProvider(new IamProvider[] { Mockito.mock(IamProvider.class) });
+		new UserOrgResource().setIamProvider(new IamProvider[] { mock(IamProvider.class) });
 	}
 
 	@Autowired
