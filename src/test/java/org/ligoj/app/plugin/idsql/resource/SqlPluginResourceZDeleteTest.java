@@ -3,12 +3,11 @@
  */
 package org.ligoj.app.plugin.idsql.resource;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.ligoj.app.model.Subscription;
-import org.ligoj.app.plugin.idsql.dao.GroupSqlRepository;
+
+import java.util.Map;
 
 /**
  * Test class of {@link SqlPluginResource}
