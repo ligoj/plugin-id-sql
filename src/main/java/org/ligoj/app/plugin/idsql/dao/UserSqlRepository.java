@@ -284,10 +284,13 @@ public class UserSqlRepository implements IUserRepository {
 	 * Indicates the given user match to the given pattern.
 	 */
 	private boolean matchPattern(final UserOrg userSql, final String criteria) {
+		// Also the custom attribute values: the visual identifier (service:id:visual-id-name) stays searchable
 		return Strings.CI.contains(userSql.getFirstName(), criteria)
 				|| Strings.CI.contains(userSql.getLastName(), criteria)
 				|| Strings.CI.contains(userSql.getId(), criteria)
-				|| !userSql.getMails().isEmpty() && Strings.CI.contains(userSql.getMails().getFirst(), criteria);
+				|| !userSql.getMails().isEmpty() && Strings.CI.contains(userSql.getMails().getFirst(), criteria)
+				|| userSql.getCustomAttributes() != null
+						&& userSql.getCustomAttributes().values().stream().anyMatch(v -> Strings.CI.contains(v, criteria));
 	}
 
 	@Override
