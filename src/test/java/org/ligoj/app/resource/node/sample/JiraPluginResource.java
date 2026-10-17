@@ -39,7 +39,7 @@ public class JiraPluginResource extends AbstractToolPluginResource {
 	public static final String PARAMETER_JDBC_PASSWORD = KEY + ":jdbc-password";
 
 	/**
-	 * Web site URL
+	 * Website URL
 	 */
 	public static final String PARAMETER_URL = KEY + ":url";
 
