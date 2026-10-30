@@ -12,13 +12,16 @@ import org.ligoj.app.iam.CompanyOrg;
 import org.ligoj.app.iam.UserOrg;
 import org.ligoj.app.iam.model.*;
 import org.ligoj.app.model.*;
+import org.ligoj.app.plugin.id.dao.UserCriteria;
 import org.ligoj.app.plugin.id.model.ContainerScope;
 import org.ligoj.app.plugin.idsql.model.UserSqlCredential;
 import org.ligoj.bootstrap.AbstractJpaTest;
 import org.ligoj.bootstrap.MatcherUtil;
 import org.ligoj.bootstrap.core.resource.TechnicalException;
 import org.ligoj.bootstrap.core.validation.ValidationJsonException;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,6 +58,22 @@ class UserSqlRepositoryTest extends AbstractJpaTest {
 		repository = new UserSqlRepository();
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(repository);
 		cacheManager.getCache("id-sql-data").clear();
+	}
+
+	/**
+	 * The search is the shared {@link UserCriteria} of plugin-id: the attributes it reads come with the installed
+	 * plugin-id, the company and the groups since 5.0.7.
+	 */
+	@Test
+	void findAllCriteria() {
+		final var users = repository.findAll();
+		final var companies = users.values().stream().map(UserOrg::getCompany).collect(Collectors.toSet());
+		final var page = PageRequest.of(0, 1000);
+		try (var criteria = Mockito.mockStatic(UserCriteria.class)) {
+			criteria.when(() -> UserCriteria.matches(Mockito.any(), Mockito.eq("everyone"))).thenReturn(true);
+			Assertions.assertEquals(users.size(), repository.findAll(null, companies, "everyone", page).getTotalElements());
+			Assertions.assertEquals(0, repository.findAll(null, companies, "nobody", page).getTotalElements());
+		}
 	}
 
 	@Test

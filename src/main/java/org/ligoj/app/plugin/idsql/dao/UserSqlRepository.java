@@ -10,12 +10,12 @@ import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.apache.commons.text.RandomStringGenerator;
 import org.ligoj.app.iam.*;
 import org.ligoj.app.iam.dao.CacheUserRepository;
 import org.ligoj.app.iam.model.CacheUser;
 import org.ligoj.app.plugin.id.dao.AbstractMemCacheRepository.CacheDataType;
+import org.ligoj.app.plugin.id.dao.UserCriteria;
 import org.ligoj.app.plugin.id.model.*;
 import org.ligoj.app.plugin.idsql.model.UserSqlCredential;
 import org.ligoj.app.plugin.idsql.resource.SqlPluginResource;
@@ -274,23 +274,12 @@ public class UserSqlRepository implements IUserRepository {
 	}
 
 	private void addFilteredByPattern(final String criteria, final Set<UserOrg> result, final UserOrg userSql) {
-		if (criteria == null || matchPattern(userSql, criteria)) {
+		// The search shared by the identity providers: the login, the names, the first mail, the custom attribute
+		// values, and since plugin-id 5.0.7 the company and the groups
+		if (UserCriteria.matches(userSql, criteria)) {
 			// Company and pattern match
 			result.add(userSql);
 		}
-	}
-
-	/**
-	 * Indicates the given user match to the given pattern.
-	 */
-	private boolean matchPattern(final UserOrg userSql, final String criteria) {
-		// Also the custom attribute values: the visual identifier (service:id:visual-id-name) stays searchable
-		return Strings.CI.contains(userSql.getFirstName(), criteria)
-				|| Strings.CI.contains(userSql.getLastName(), criteria)
-				|| Strings.CI.contains(userSql.getId(), criteria)
-				|| !userSql.getMails().isEmpty() && Strings.CI.contains(userSql.getMails().getFirst(), criteria)
-				|| userSql.getCustomAttributes() != null
-						&& userSql.getCustomAttributes().values().stream().anyMatch(v -> Strings.CI.contains(v, criteria));
 	}
 
 	@Override
